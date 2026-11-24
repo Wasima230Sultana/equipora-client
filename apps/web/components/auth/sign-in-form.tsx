@@ -10,6 +10,8 @@ import { Button } from "@workspace/ui/components/button"
 import { Input } from "@workspace/ui/components/input"
 import { Label } from "@workspace/ui/components/label"
 import { signIn } from "@/lib/auth-client"
+import { AuthDivider } from "@/components/auth/auth-divider"
+import { GoogleSignInButton } from "@/components/auth/google-sign-in-button"
 import { PasswordInput } from "@/components/auth/password-input"
 
 /** Email + password sign-in using the same auth client as registration. */
@@ -100,6 +102,10 @@ export function SignInForm() {
           </>
         )}
       </Button>
+
+      <AuthDivider />
+
+      <GoogleSignInButton label="Sign in with Google" />
 
       <p className="text-center text-sm text-muted-foreground">
         New to Equipora?{" "}

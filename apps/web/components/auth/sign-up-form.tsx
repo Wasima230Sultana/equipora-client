@@ -11,9 +11,13 @@ import { Input } from "@workspace/ui/components/input"
 import { Label } from "@workspace/ui/components/label"
 import { signUp } from "@/lib/auth-client"
 import { getPasswordErrors } from "@/lib/password"
+import { defaultRole, type UserRole } from "@/lib/roles"
+import { AuthDivider } from "@/components/auth/auth-divider"
+import { GoogleSignInButton } from "@/components/auth/google-sign-in-button"
 import { PasswordInput } from "@/components/auth/password-input"
 import { PasswordRequirements } from "@/components/auth/password-requirements"
 import { PhotoField } from "@/components/auth/photo-field"
+import { RoleSelect } from "@/components/auth/role-select"
 
 /** Email + password registration form. */
 export function SignUpForm() {
@@ -21,6 +25,7 @@ export function SignUpForm() {
   const [name, setName] = useState("")
   const [email, setEmail] = useState("")
   const [photo, setPhoto] = useState("")
+  const [role, setRole] = useState<UserRole>(defaultRole)
   const [password, setPassword] = useState("")
   const [submitting, setSubmitting] = useState(false)
 
@@ -55,6 +60,7 @@ export function SignUpForm() {
         email: email.trim(),
         password,
         image: photo.trim() || undefined,
+        role,
       })
 
       if (error) {
@@ -109,6 +115,8 @@ export function SignUpForm() {
 
       <PhotoField value={photo} onChange={setPhoto} />
 
+      <RoleSelect value={role} onChange={setRole} />
+
       <div className="space-y-2">
         <Label htmlFor="password">Password</Label>
         <PasswordInput
@@ -138,6 +146,10 @@ export function SignUpForm() {
           </>
         )}
       </Button>
+
+      <AuthDivider />
+
+      <GoogleSignInButton />
 
       <p className="text-center text-sm text-muted-foreground">
         Already have an account?{" "}
