@@ -1,29 +1,21 @@
 "use client"
 
-import { useEffect } from "react"
-
 import {
   DataTable,
   type DataTableColumn,
 } from "@/components/dashboard/data-table"
 import { StatusBadge } from "@/components/dashboard/status-badge"
+import { useOwnerRentals } from "@/hooks/use-owner-data"
 import type { OwnerRental } from "@/lib/owner-equipment"
 
 type EquipmentRentalsTableProps = {
-  initialRentals: OwnerRental[]
+  ownerId: string
 }
 
 /** Bookings for equipment owned by the logged-in owner. */
-export function EquipmentRentalsTable({
-  initialRentals,
-}: EquipmentRentalsTableProps) {
-  useEffect(() => {
-    console.log(
-      "[Owner UI] EquipmentRentalsTable mounted",
-      initialRentals.length,
-      "booking(s)"
-    )
-  }, [initialRentals.length])
+export function EquipmentRentalsTable({ ownerId }: EquipmentRentalsTableProps) {
+  const { rows, loading, error } = useOwnerRentals(ownerId)
+  console.log("[Owner UI] EquipmentRentalsTable rendering", rows.length, "booking(s)")
 
   const columns: DataTableColumn<OwnerRental>[] = [
     {
@@ -81,11 +73,15 @@ export function EquipmentRentalsTable({
   return (
     <div className="space-y-4">
       <p className="text-sm text-muted-foreground">
-        {initialRentals.length} booking(s) against your equipment
+        {error
+          ? error
+          : loading
+            ? "Loading bookings from backend..."
+            : `${rows.length} booking(s) against your equipment`}
       </p>
       <DataTable
         columns={columns}
-        rows={initialRentals}
+        rows={rows}
         emptyMessage="No one has rented your equipment yet."
       />
     </div>

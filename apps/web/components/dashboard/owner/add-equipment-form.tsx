@@ -13,6 +13,7 @@ import {
   SelectInput,
   TextArea,
 } from "@/components/dashboard/owner/form-controls"
+import { ownerApiClient } from "@/lib/owner-api-client"
 import {
   EQUIPMENT_CATEGORIES,
   EQUIPMENT_CONDITIONS,
@@ -26,18 +27,17 @@ import {
 
 type AddEquipmentFormProps = {
   owner: OwnerInfo
+  ownerId: string
   /** Pass an item to reuse this form for the Update action. */
   initialEquipment?: Equipment
   onSaved?: () => void
   onCancel?: () => void
 }
 
-/**
- * One form for both "Add Equipment" and "Update Equipment".
- * It posts to the demo API; replace the fetch URLs with a real backend later.
- */
+/** One form for both "Add Equipment" and "Update Equipment". */
 export function AddEquipmentForm({
   owner,
+  ownerId,
   initialEquipment,
   onSaved,
   onCancel,
@@ -81,22 +81,13 @@ export function AddEquipmentForm({
 
     setSaving(true)
     try {
-      const url = editingId
-        ? `/api/owner/equipment/${editingId}`
-        : "/api/owner/equipment"
-      console.log("[Owner UI] sending", editingId ? "PATCH" : "POST", url)
+      console.log("[Owner UI] sending", editingId ? "PATCH" : "POST", "equipment")
 
-      const response = await fetch(url, {
-        method: editingId ? "PATCH" : "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form),
-      })
-      const result = await response.json()
-      if (!response.ok) {
-        throw new Error(result.error ?? "The request could not be completed.")
-      }
+      const result = editingId
+        ? await ownerApiClient.updateEquipment(ownerId, editingId, form)
+        : await ownerApiClient.createEquipment(ownerId, form)
 
-      console.log("[Owner UI] save succeeded", result.equipment?.id)
+      console.log("[Owner UI] save succeeded", result.equipment.id)
       toast.success(
         editingId ? "Equipment updated" : "Equipment submitted for review",
         {
@@ -324,11 +315,11 @@ export function AddEquipmentForm({
           </p>
           <p>
             <span className="text-muted-foreground">Phone: </span>
-            {owner.phone}
+            {owner.phone || "—"}
           </p>
           <p>
             <span className="text-muted-foreground">Company: </span>
-            {owner.company}
+            {owner.company || "—"}
           </p>
         </div>
         <p className="mt-3 text-xs text-muted-foreground">

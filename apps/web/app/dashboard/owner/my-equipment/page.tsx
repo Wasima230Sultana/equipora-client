@@ -1,21 +1,29 @@
+"use client"
+
 import { DashboardPage } from "@/components/dashboard/dashboard-page"
 import { MyEquipmentTable } from "@/components/dashboard/owner/my-equipment-table"
-import { getCurrentOwner, listEquipment } from "@/lib/owner-equipment"
-
-// Demo data can change, so render on every request instead of at build time.
-export const dynamic = "force-dynamic"
+import { useOwnerId, useOwnerInfo } from "@/hooks/use-owner-data"
 
 export default function MyEquipmentPage() {
-  const owner = getCurrentOwner()
-  const equipment = listEquipment(owner.id)
-  console.log("[Owner Page] rendering My Equipment", equipment.length, "item(s)")
+  const { ownerId, isPending } = useOwnerId()
+  const { owner, loading, error } = useOwnerInfo(ownerId)
 
   return (
     <DashboardPage
       title="My Equipment"
       description="Manage the machines you have listed."
     >
-      <MyEquipmentTable owner={owner} initialEquipment={equipment} />
+      {isPending || loading ? (
+        <div className="rounded-2xl border border-border bg-card p-8 text-sm text-muted-foreground">
+          Loading your owner details from the backend...
+        </div>
+      ) : error || !owner ? (
+        <div className="rounded-2xl border border-border bg-card p-8 text-sm text-muted-foreground">
+          {error ?? "Please sign in as an owner to manage equipment."}
+        </div>
+      ) : (
+        <MyEquipmentTable owner={owner} ownerId={ownerId} />
+      )}
     </DashboardPage>
   )
 }

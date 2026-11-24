@@ -19,62 +19,39 @@ import { StatusBadge } from "@/components/dashboard/status-badge"
 import { AddEquipmentForm } from "@/components/dashboard/owner/add-equipment-form"
 import { EquipmentDetailsDialog } from "@/components/dashboard/owner/equipment-details-dialog"
 import { Modal } from "@/components/dashboard/owner/modal"
+import { useOwnerEquipment } from "@/hooks/use-owner-data"
+import { ownerApiClient } from "@/lib/owner-api-client"
 import type { Equipment, OwnerInfo } from "@/lib/owner-equipment"
 
 type MyEquipmentTableProps = {
   owner: OwnerInfo
-  initialEquipment: Equipment[]
+  ownerId: string
 }
 
 /** Lists the logged-in owner's equipment with Update / Delete / View actions. */
-export function MyEquipmentTable({
-  owner,
-  initialEquipment,
-}: MyEquipmentTableProps) {
-  const [rows, setRows] = useState<Equipment[]>(initialEquipment)
-  const [refreshing, setRefreshing] = useState(false)
+export function MyEquipmentTable({ owner, ownerId }: MyEquipmentTableProps) {
+  const {
+    rows,
+    loading: refreshing,
+    error: loadError,
+    refresh,
+  } = useOwnerEquipment(ownerId)
   const [viewing, setViewing] = useState<Equipment | null>(null)
   const [editing, setEditing] = useState<Equipment | null>(null)
   const [deleting, setDeleting] = useState<Equipment | null>(null)
 
   console.log("[Owner UI] MyEquipmentTable rendering", rows.length, "item(s)")
 
-  /** Re-read the list after a create / update / delete. */
-  async function refreshEquipment() {
-    console.log("[Owner UI] refreshing equipment list")
-    setRefreshing(true)
-    try {
-      const response = await fetch("/api/owner/equipment")
-      const result = await response.json()
-      if (!response.ok) {
-        throw new Error(result.error ?? "Could not load your equipment.")
-      }
-      setRows(result.equipment as Equipment[])
-      console.log("[Owner UI] equipment list refreshed", result.equipment.length)
-    } catch (error) {
-      console.error("[Owner UI] refresh failed", error)
-      toast.error("Could not refresh your equipment")
-    } finally {
-      setRefreshing(false)
-    }
-  }
-
   async function confirmDelete() {
     if (!deleting) return
     console.log("[Owner UI] delete requested", deleting.id)
 
     try {
-      const response = await fetch(`/api/owner/equipment/${deleting.id}`, {
-        method: "DELETE",
-      })
-      const result = await response.json()
-      if (!response.ok) {
-        throw new Error(result.error ?? "Could not delete the equipment.")
-      }
+      await ownerApiClient.deleteEquipment(ownerId, deleting.id)
       console.log("[Owner UI] delete succeeded", deleting.id)
       toast.success("Equipment deleted")
       setDeleting(null)
-      await refreshEquipment()
+      await refresh()
     } catch (error) {
       console.error("[Owner UI] delete failed", error)
       toast.error(error instanceof Error ? error.message : "Delete failed")
@@ -181,7 +158,11 @@ export function MyEquipmentTable({
     <div className="space-y-4">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <p className="text-sm text-muted-foreground">
-          {refreshing ? "Refreshing..." : `${rows.length} listing(s)`}
+          {loadError
+            ? loadError
+            : refreshing
+              ? "Loading from backend..."
+              : `${rows.length} listing(s)`}
         </p>
         <Link
           href="/dashboard/owner/add-equipment"
@@ -213,11 +194,12 @@ export function MyEquipmentTable({
         {editing && (
           <AddEquipmentForm
             owner={owner}
+            ownerId={ownerId}
             initialEquipment={editing}
             onCancel={() => setEditing(null)}
             onSaved={() => {
               setEditing(null)
-              void refreshEquipment()
+              void refresh()
             }}
           />
         )}

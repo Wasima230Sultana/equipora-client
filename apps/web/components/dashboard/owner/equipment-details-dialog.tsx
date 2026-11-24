@@ -68,8 +68,8 @@ export function EquipmentDetailsDialog({
         />
         <Detail label="Owner" value={equipment.owner.name} />
         <Detail label="Owner email" value={equipment.owner.email} />
-        <Detail label="Owner phone" value={equipment.owner.phone} />
-        <Detail label="Company" value={equipment.owner.company} />
+        <Detail label="Owner phone" value={equipment.owner.phone || "—"} />
+        <Detail label="Company" value={equipment.owner.company || "—"} />
         <div className="sm:col-span-2">
           <dt className="text-muted-foreground">Description</dt>
           <dd className="mt-1 leading-relaxed">{equipment.description || "—"}</dd>

@@ -1,22 +1,31 @@
+"use client"
+
 import { DashboardPage } from "@/components/dashboard/dashboard-page"
 import { AddEquipmentForm } from "@/components/dashboard/owner/add-equipment-form"
-import { getCurrentOwner } from "@/lib/owner-equipment"
-
-// Demo data can change, so render on every request instead of at build time.
-export const dynamic = "force-dynamic"
+import { useOwnerId, useOwnerInfo } from "@/hooks/use-owner-data"
 
 export default function AddEquipmentPage() {
-  const owner = getCurrentOwner()
-  console.log("[Owner Page] rendering Add Equipment")
+  const { ownerId, isPending } = useOwnerId()
+  const { owner, loading, error } = useOwnerInfo(ownerId)
 
   return (
     <DashboardPage
       title="Add Equipment"
       description="List a machine and start earning from it."
     >
-      <div className="rounded-2xl border border-border bg-card p-6 shadow-sm">
-        <AddEquipmentForm owner={owner} />
-      </div>
+      {isPending || loading ? (
+        <div className="rounded-2xl border border-border bg-card p-8 text-sm text-muted-foreground">
+          Loading your owner details from the backend...
+        </div>
+      ) : error || !owner ? (
+        <div className="rounded-2xl border border-border bg-card p-8 text-sm text-muted-foreground">
+          {error ?? "Please sign in as an owner to add equipment."}
+        </div>
+      ) : (
+        <div className="rounded-2xl border border-border bg-card p-6 shadow-sm">
+          <AddEquipmentForm owner={owner} ownerId={ownerId} />
+        </div>
+      )}
     </DashboardPage>
   )
 }
