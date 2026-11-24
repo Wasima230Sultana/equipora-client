@@ -1,9 +1,9 @@
 "use client"
 
-import { useRef, useState, type ChangeEvent, type FormEvent } from "react"
+import { useState, type FormEvent } from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
-import { ArrowRight, LoaderCircle, Upload } from "lucide-react"
+import { ArrowRight, LoaderCircle } from "lucide-react"
 import { toast } from "sonner"
 
 import { Button } from "@workspace/ui/components/button"
@@ -13,53 +13,16 @@ import { signUp } from "@/lib/auth-client"
 import { getPasswordErrors } from "@/lib/password"
 import { PasswordInput } from "@/components/auth/password-input"
 import { PasswordRequirements } from "@/components/auth/password-requirements"
+import { PhotoField } from "@/components/auth/photo-field"
 
-/** Email + password registration, including an optional ImgBB photo upload. */
+/** Email + password registration form. */
 export function SignUpForm() {
   const router = useRouter()
-  const fileInputRef = useRef<HTMLInputElement>(null)
   const [name, setName] = useState("")
   const [email, setEmail] = useState("")
   const [photo, setPhoto] = useState("")
   const [password, setPassword] = useState("")
-  const [uploading, setUploading] = useState(false)
   const [submitting, setSubmitting] = useState(false)
-
-  async function handlePhotoUpload(event: ChangeEvent<HTMLInputElement>) {
-    const file = event.target.files?.[0]
-    event.target.value = ""
-    if (!file) return
-
-    const apiKey = process.env.NEXT_PUBLIC_IMGBB_API_KEY
-    if (!apiKey) {
-      toast.error("ImgBB upload is not configured", {
-        description: "Paste a direct image link instead.",
-      })
-      return
-    }
-
-    setUploading(true)
-    try {
-      const body = new FormData()
-      body.append("image", file)
-      const response = await fetch(
-        `https://api.imgbb.com/1/upload?key=${apiKey}`,
-        { method: "POST", body }
-      )
-      const result = await response.json()
-
-      if (!response.ok || !result?.data?.url) {
-        throw new Error("Upload failed. Please try again.")
-      }
-
-      setPhoto(result.data.url)
-      toast.success("Photo uploaded successfully")
-    } catch (error) {
-      toast.error(error instanceof Error ? error.message : "Upload failed")
-    } finally {
-      setUploading(false)
-    }
-  }
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
@@ -105,6 +68,7 @@ export function SignUpForm() {
         description: "Welcome to Equipora.",
       })
       router.push("/")
+      router.refresh()
     } catch (error) {
       toast.error("Something went wrong", {
         description: error instanceof Error ? error.message : undefined,
@@ -143,40 +107,7 @@ export function SignUpForm() {
         />
       </div>
 
-      <div className="space-y-2">
-        <Label htmlFor="photo">Photo</Label>
-        <div className="flex gap-2">
-          <Input
-            id="photo"
-            type="url"
-            value={photo}
-            onChange={(event) => setPhoto(event.target.value)}
-            placeholder="Paste a direct image link"
-            className="h-11"
-          />
-          <Button
-            type="button"
-            variant="outline"
-            size="lg"
-            className="h-11 shrink-0"
-            onClick={() => fileInputRef.current?.click()}
-            disabled={uploading}
-          >
-            {uploading ? <LoaderCircle className="animate-spin" /> : <Upload />}
-            Upload
-          </Button>
-          <input
-            ref={fileInputRef}
-            type="file"
-            accept="image/*"
-            className="hidden"
-            onChange={handlePhotoUpload}
-          />
-        </div>
-        <p className="text-xs text-muted-foreground">
-          Direct image link or upload to ImgBB.
-        </p>
-      </div>
+      <PhotoField value={photo} onChange={setPhoto} />
 
       <div className="space-y-2">
         <Label htmlFor="password">Password</Label>

@@ -43,6 +43,7 @@ export function SignInForm() {
 
       toast.success("Welcome back to Equipora!")
       router.push("/")
+      router.refresh()
     } catch (error) {
       toast.error("Something went wrong", {
         description: error instanceof Error ? error.message : undefined,
