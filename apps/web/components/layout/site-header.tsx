@@ -65,7 +65,7 @@ export function SiteHeader() {
                   Register
                 </a>
                 <a
-                  href="/sign-in"
+                  href="/dashboard"
                   className={buttonVariants({
                     size: "lg",
                     className: "h-10 px-4",
@@ -140,7 +140,7 @@ export function SiteHeader() {
                   Register
                 </a>
                 <a
-                  href="/sign-in"
+                  href="/dashboard"
                   onClick={() => setMenuOpen(false)}
                   className={buttonVariants({ size: "lg", className: "h-11" })}
                 >

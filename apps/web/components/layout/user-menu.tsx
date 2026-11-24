@@ -109,7 +109,7 @@ export function UserMenu({ onNavigate, className }: UserMenuProps) {
             Profile
           </Link>
           <Link
-            href="/"
+            href="/dashboard"
             role="menuitem"
             onClick={close}
             className="flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm transition-colors hover:bg-muted"
