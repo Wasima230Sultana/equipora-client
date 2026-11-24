@@ -1,19 +1,28 @@
-import { Button } from "@workspace/ui/components/button"
+import { CategoriesSection } from "@/components/sections/categories-section"
+import { FeaturedEquipmentSection } from "@/components/sections/featured-equipment-section"
+import { HeroSection } from "@/components/sections/hero-section"
+import { HowItWorksSection } from "@/components/sections/how-it-works-section"
+import { ListEquipmentCtaSection } from "@/components/sections/list-equipment-cta-section"
+import { RecentlyAddedSection } from "@/components/sections/recently-added-section"
+import { SearchSection } from "@/components/sections/search-section"
+import { TestimonialsSection } from "@/components/sections/testimonials-section"
+import { TrustedOwnersSection } from "@/components/sections/trusted-owners-section"
+import { WhyChooseSection } from "@/components/sections/why-choose-section"
 
+/** Homepage sections are composed here; each section lives in its own component. */
 export default function Page() {
   return (
-    <div className="flex min-h-svh p-6">
-      <div className="flex max-w-md min-w-0 flex-col gap-4 text-sm leading-loose">
-        <div>
-          <h1 className="font-medium">Project ready!</h1>
-          <p>You may now add components and start building.</p>
-          <p>We&apos;ve already added the button component for you.</p>
-          <Button className="mt-2">Button</Button>
-        </div>
-        <div className="text-muted-foreground font-mono text-xs">
-          (Press <kbd>d</kbd> to toggle dark mode)
-        </div>
-      </div>
-    </div>
+    <main>
+      <HeroSection />
+      <SearchSection />
+      <CategoriesSection />
+      <FeaturedEquipmentSection />
+      <HowItWorksSection />
+      <WhyChooseSection />
+      <RecentlyAddedSection />
+      <TrustedOwnersSection />
+      <TestimonialsSection />
+      <ListEquipmentCtaSection />
+    </main>
   )
 }
