@@ -2,9 +2,8 @@ import type { Metadata } from "next"
 import { Geist, Geist_Mono } from "next/font/google"
 
 import "@workspace/ui/globals.css"
+import { Toaster } from "@workspace/ui/components/sonner"
 import { ThemeProvider } from "@/components/theme-provider"
-import { SiteFooter } from "@/components/layout/site-footer"
-import { SiteHeader } from "@/components/layout/site-header"
 import { cn } from "@workspace/ui/lib/utils"
 
 const geist = Geist({ subsets: ["latin"], variable: "--font-sans" })
@@ -38,9 +37,8 @@ export default function RootLayout({
     >
       <body>
         <ThemeProvider>
-          <SiteHeader />
           {children}
-          <SiteFooter />
+          <Toaster />
         </ThemeProvider>
       </body>
     </html>

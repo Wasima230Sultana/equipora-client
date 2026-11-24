@@ -28,7 +28,7 @@ export function ListEquipmentCtaSection() {
           </p>
 
           <div className="mt-9 flex flex-wrap justify-center gap-3">
-            <a href="#" className={lightCtaClass}>
+            <a href="/sign-up" className={lightCtaClass}>
               Start listing today
               <ArrowRight className="size-4" />
             </a>

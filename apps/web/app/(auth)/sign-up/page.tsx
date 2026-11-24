@@ -1,11 +1,20 @@
-import React from 'react';
+import type { Metadata } from "next"
 
-const SignUpPage = () => {
-    return (
-        <div>
-            SignUpPage
-        </div>
-    );
-};
+import { AuthShell } from "@/components/auth/auth-shell"
+import { SignUpForm } from "@/components/auth/sign-up-form"
 
-export default SignUpPage;
+export const metadata: Metadata = {
+  title: "Create your account | Equipora",
+  description: "Register with Equipora to rent or list construction equipment.",
+}
+
+export default function SignUpPage() {
+  return (
+    <AuthShell
+      title="Create your account"
+      description="Join Equipora in a few simple steps."
+    >
+      <SignUpForm />
+    </AuthShell>
+  )
+}

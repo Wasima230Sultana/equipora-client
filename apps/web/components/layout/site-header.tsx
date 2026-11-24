@@ -38,13 +38,13 @@ export function SiteHeader() {
 
           <div className="hidden items-center gap-2 lg:flex">
             <a
-              href="#"
+              href="/sign-in"
               className="px-3 text-sm font-medium text-foreground transition-colors hover:text-primary"
             >
               Login
             </a>
             <a
-              href="#"
+              href="/sign-up"
               className={buttonVariants({
                 variant: "outline",
                 size: "lg",
@@ -94,7 +94,7 @@ export function SiteHeader() {
             ))}
             <div className="mt-3 grid gap-2 border-t border-border pt-4 sm:grid-cols-3">
               <a
-                href="#"
+                href="/sign-in"
                 onClick={() => setMenuOpen(false)}
                 className={buttonVariants({
                   variant: "outline",
@@ -105,7 +105,7 @@ export function SiteHeader() {
                 Login
               </a>
               <a
-                href="#"
+                href="/sign-up"
                 onClick={() => setMenuOpen(false)}
                 className={buttonVariants({
                   variant: "outline",
