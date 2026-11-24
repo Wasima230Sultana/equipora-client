@@ -1,14 +1,19 @@
+"use client"
+
 import { DashboardPage } from "@/components/dashboard/dashboard-page"
-import { RentalsTable } from "@/components/dashboard/rentals-table"
-import { myRentals } from "@/lib/dashboard-data"
+import { MyRentalsTable } from "@/components/dashboard/customer/my-rentals-table"
+import { useSessionUser } from "@/hooks/use-session-user"
 
 export default function MyRentalsPage() {
+  const { userId, role } = useSessionUser()
+  const customerId = role === "customer" ? userId : ""
+
   return (
     <DashboardPage
       title="My Rentals"
-      description="Your past and active equipment bookings."
+      description="All equipment bookings you have made."
     >
-      <RentalsTable rows={myRentals} />
+      <MyRentalsTable customerId={customerId} />
     </DashboardPage>
   )
 }

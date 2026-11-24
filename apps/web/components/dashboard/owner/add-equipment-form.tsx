@@ -12,7 +12,7 @@ import {
   FormField,
   SelectInput,
   TextArea,
-} from "@/components/dashboard/owner/form-controls"
+} from "@/components/dashboard/form-controls"
 import { ownerApiClient } from "@/lib/owner-api-client"
 import {
   EQUIPMENT_CATEGORIES,

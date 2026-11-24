@@ -67,7 +67,7 @@ export function DashboardShell({ children }: { children: ReactNode }) {
         )}
       >
         <div className="flex h-16 shrink-0 items-center justify-between border-b border-border px-5">
-          <Link href="/dashboard" aria-label="Equipora dashboard">
+          <Link href="/" aria-label="Equipora dashboard">
             <BrandLogo />
           </Link>
           <button

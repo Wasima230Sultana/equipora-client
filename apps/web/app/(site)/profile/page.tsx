@@ -17,7 +17,7 @@ export default function ProfilePage() {
           <SectionHeading
             eyebrow="Account"
             title="Your profile"
-            description="Manage your name and profile picture."
+            description="Manage your name, contact details and profile picture."
           />
           <div className="mt-10">
             <ProfileForm />

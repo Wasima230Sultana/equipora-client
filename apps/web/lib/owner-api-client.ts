@@ -1,3 +1,4 @@
+import { apiRequest } from "@/lib/backend-client"
 import type {
   Equipment,
   EquipmentInput,
@@ -5,29 +6,7 @@ import type {
   OwnerRental,
 } from "@/lib/owner-equipment"
 
-/**
- * Frontend-only API client.
- * It only builds HTTP calls to the separate equipora-server backend.
- * No database, no session validation, no server code lives here.
- */
-
-const API_BASE_URL =
-  process.env.NEXT_PUBLIC_EQUIPORA_SERVER_URL ?? "http://localhost:5000"
-
-async function apiRequest<T>(path: string, init?: RequestInit): Promise<T> {
-  console.log("[Owner API Client]", init?.method ?? "GET", path)
-  const response = await fetch(`${API_BASE_URL}${path}`, {
-    ...init,
-    cache: "no-store",
-    headers: { "Content-Type": "application/json", ...init?.headers },
-  })
-  const result = await response.json()
-  if (!response.ok) {
-    throw new Error(result.error ?? "The backend request failed.")
-  }
-  console.log("[Owner API Client] success", path)
-  return result as T
-}
+/** Frontend-only owner API calls to equipora-server. */
 
 export const ownerApiClient = {
   getOwner: (ownerId: string) =>

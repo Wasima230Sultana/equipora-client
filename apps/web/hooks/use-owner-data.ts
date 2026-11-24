@@ -2,9 +2,9 @@
 
 import { useCallback, useEffect, useState } from "react"
 
+import { useSessionUser } from "@/hooks/use-session-user"
 import { ownerApiClient } from "@/lib/owner-api-client"
 import type { Equipment, OwnerInfo, OwnerRental } from "@/lib/owner-equipment"
-import { useSession } from "@/lib/auth-client"
 
 /**
  * Client hooks for the owner workspace.
@@ -13,8 +13,8 @@ import { useSession } from "@/lib/auth-client"
  */
 
 export function useOwnerId() {
-  const { data: session, isPending } = useSession()
-  const ownerId = session?.user.role === "owner" ? session.user.id : ""
+  const { userId, role, isPending } = useSessionUser()
+  const ownerId = role === "owner" ? userId : ""
   console.log("[Owner UI] session owner id:", ownerId || "none")
   return { ownerId, isPending, isOwner: Boolean(ownerId) }
 }

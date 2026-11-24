@@ -13,13 +13,13 @@ type EquipmentDetailsDialogProps = {
   onClose: () => void
 }
 
-/** "View Details" dialog, shared by the My Equipment table. */
+/** Shared "View Details" dialog used by owner and customer tables. */
 export function EquipmentDetailsDialog({
   equipment,
   onClose,
 }: EquipmentDetailsDialogProps) {
   useEffect(() => {
-    if (equipment) console.log("[Owner UI] viewing details for", equipment.id)
+    if (equipment) console.log("[UI] viewing equipment details", equipment.id)
   }, [equipment])
 
   if (!equipment) return null
@@ -66,10 +66,8 @@ export function EquipmentDetailsDialog({
           label="Listed on"
           value={new Date(equipment.createdAt).toLocaleDateString()}
         />
-        <Detail label="Owner" value={equipment.owner.name} />
-        <Detail label="Owner email" value={equipment.owner.email} />
-        <Detail label="Owner phone" value={equipment.owner.phone || "—"} />
-        <Detail label="Company" value={equipment.owner.company || "—"} />
+        <Detail label="Owner" value={equipment.owner?.name || "—"} />
+        <Detail label="Owner email" value={equipment.owner?.email || "—"} />
         <div className="sm:col-span-2">
           <dt className="text-muted-foreground">Description</dt>
           <dd className="mt-1 leading-relaxed">{equipment.description || "—"}</dd>

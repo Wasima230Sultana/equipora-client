@@ -17,7 +17,7 @@ import {
 } from "@/components/dashboard/data-table"
 import { StatusBadge } from "@/components/dashboard/status-badge"
 import { AddEquipmentForm } from "@/components/dashboard/owner/add-equipment-form"
-import { EquipmentDetailsDialog } from "@/components/dashboard/owner/equipment-details-dialog"
+import { EquipmentDetailsDialog } from "@/components/dashboard/equipment-details-dialog"
 import { Modal } from "@/components/dashboard/owner/modal"
 import { useOwnerEquipment } from "@/hooks/use-owner-data"
 import { ownerApiClient } from "@/lib/owner-api-client"

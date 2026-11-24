@@ -62,8 +62,12 @@ export const dashboardNav: Record<DashboardRole, DashboardNavItem[]> = {
   ],
   customer: [
     { label: "Overview", href: "/dashboard", icon: LayoutDashboard },
-    { label: "My Rentals", href: "/dashboard/my-rentals", icon: CalendarRange },
-    { label: "Favorites", href: "/dashboard/favorites", icon: Heart },
+    {
+      label: "My Rentals",
+      href: "/dashboard/customer/my-rentals",
+      icon: CalendarRange,
+    },
+    { label: "Favorites", href: "/dashboard/customer/favorites", icon: Heart },
     { label: "My Profile", href: "/dashboard/profile", icon: UserRound },
   ],
 }

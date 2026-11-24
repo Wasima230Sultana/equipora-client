@@ -1,18 +1,19 @@
+"use client"
+
 import { DashboardPage } from "@/components/dashboard/dashboard-page"
-import { EquipmentCard } from "@/components/ui/equipment-card"
-import { featuredEquipment } from "@/lib/site-data"
+import { FavoritesTable } from "@/components/dashboard/customer/favorites-table"
+import { useSessionUser } from "@/hooks/use-session-user"
 
 export default function FavoritesPage() {
+  const { userId, role } = useSessionUser()
+  const customerId = role === "customer" ? userId : ""
+
   return (
     <DashboardPage
       title="Favorites"
-      description="Machines you have saved for later."
+      description="Equipment you have saved for later."
     >
-      <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
-        {featuredEquipment.map((equipment) => (
-          <EquipmentCard key={equipment.id} equipment={equipment} />
-        ))}
-      </div>
+      <FavoritesTable customerId={customerId} />
     </DashboardPage>
   )
 }
