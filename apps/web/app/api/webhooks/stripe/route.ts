@@ -45,6 +45,7 @@ export async function POST(request: Request) {
 
       if (rentalId && customerId && session.payment_status === "paid") {
         await updateRentalPayment(customerId, rentalId, {
+          sessionId: session.id,
           paymentStatus: "Paid",
           bookingStatus: "Confirmed",
           paymentIntentId:
@@ -63,6 +64,7 @@ export async function POST(request: Request) {
       const customerId = session.metadata?.customerId
       if (rentalId && customerId) {
         await updateRentalPayment(customerId, rentalId, {
+          sessionId: session.id,
           paymentStatus: "Failed",
           bookingStatus: "Cancelled",
         })

@@ -22,6 +22,8 @@ export type CustomerRental = {
   totalAmount: number
   paymentStatus: PaymentStatus
   bookingStatus: BookingStatus
+  // Bound to the rental when checkout starts.
+  stripeSessionId?: string
   // Added once Stripe confirms the payment.
   stripePaymentIntentId?: string
   paidAmount?: number

@@ -8,6 +8,8 @@ import type { CustomerRental } from "@/lib/customer-data"
 import type { BookingStatus, Equipment, PaymentStatus } from "@/lib/owner-equipment"
 
 export type PaymentPatch = {
+  /** Stripe Checkout Session id; the backend accepts updates only with it. */
+  sessionId: string
   paymentStatus?: PaymentStatus
   bookingStatus?: BookingStatus
   paymentIntentId?: string
@@ -20,6 +22,7 @@ export type CreateRentalInput = {
   rentalStartDate: string
   rentalEndDate: string
   requiredQuantity: number
+  stripeSessionId: string
 }
 
 /** Origin from the current request, used for Stripe's return URLs. */
@@ -38,17 +41,6 @@ export async function getSignedInUser() {
     headers: new Headers(await headers()),
   })
   return session?.user ?? null
-}
-
-/** Shared secret header for server-to-server rental updates. */
-function internalHeaders(): HeadersInit {
-  const secret = process.env.INTERNAL_API_SECRET
-  if (!secret) {
-    throw new Error(
-      "INTERNAL_API_SECRET is missing. Add the same value to both .env.local files."
-    )
-  }
-  return { "x-internal-secret": secret }
 }
 
 export function getEquipment(id: string) {
@@ -82,7 +74,6 @@ export function updateRentalPayment(
     `/customer/${encodeURIComponent(customerId)}/rentals/${encodeURIComponent(rentalId)}/payment`,
     {
       method: "PATCH",
-      headers: internalHeaders(),
       body: JSON.stringify(patch),
     }
   )

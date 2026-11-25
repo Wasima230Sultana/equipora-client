@@ -3,26 +3,31 @@ import Link from "next/link"
 import { buttonVariants } from "@workspace/ui/components/button"
 import { CheckoutResult } from "@/components/checkout/checkout-result"
 import { updateRentalPayment } from "@/lib/payment-server"
+import { getStripe } from "@/lib/stripe"
 
 /** Stripe sends the user here when they leave checkout without paying. */
 export default async function CheckoutCancelPage({
   searchParams,
 }: {
-  searchParams: Promise<{
-    rental_id?: string
-    customer_id?: string
-    equipment_id?: string
-  }>
+  searchParams: Promise<{ session_id?: string }>
 }) {
-  const { rental_id: rentalId, customer_id: customerId, equipment_id: equipmentId } =
-    await searchParams
+  const { session_id: sessionId } = await searchParams
+  let equipmentId = ""
 
-  if (rentalId && customerId) {
+  if (sessionId) {
     try {
-      await updateRentalPayment(customerId, rentalId, {
-        paymentStatus: "Failed",
-        bookingStatus: "Cancelled",
-      })
+      const session = await getStripe().checkout.sessions.retrieve(sessionId)
+      equipmentId = session.metadata?.equipmentId ?? ""
+
+      const rentalId = session.metadata?.rentalId
+      const customerId = session.metadata?.customerId
+      if (rentalId && customerId) {
+        await updateRentalPayment(customerId, rentalId, {
+          sessionId: session.id,
+          paymentStatus: "Failed",
+          bookingStatus: "Cancelled",
+        })
+      }
     } catch (error) {
       console.error("[Checkout cancel] could not cancel the rental:", error)
     }

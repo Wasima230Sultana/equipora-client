@@ -34,8 +34,9 @@ function readCheckoutInput(body: unknown): CheckoutInput | null {
 /**
  * POST /api/checkout
  * 1. verify the Better Auth session
- * 2. create a pending rental using the backend's own price calculation
- * 3. create a Stripe Checkout session tied to that rental via metadata
+ * 2. create a Stripe Checkout session with the booking details in metadata
+ * 3. create a pending rental that stores the session id
+ * 4. add the rental id to the Stripe session so the return pages can find it
  */
 export async function POST(request: Request) {
   try {
@@ -90,10 +91,17 @@ export async function POST(request: Request) {
       )
     }
 
-    const { rental } = await createRental(user.id, input)
     const appUrl = await getAppUrl()
+    const stripe = getStripe()
+    const metadata = {
+      customerId: user.id,
+      equipmentId: equipment.id,
+      rentalStartDate: input.rentalStartDate,
+      rentalEndDate: input.rentalEndDate,
+      requiredQuantity: String(input.requiredQuantity),
+    }
 
-    const session = await getStripe().checkout.sessions.create({
+    const session = await stripe.checkout.sessions.create({
       mode: "payment",
       line_items: [
         {
@@ -110,14 +118,19 @@ export async function POST(request: Request) {
       ],
       // Prefill the customer details so Stripe shows who is booking.
       customer_email: user.email,
-      client_reference_id: rental.id,
-      metadata: {
-        rentalId: rental.id,
-        customerId: user.id,
-        equipmentId: equipment.id,
-      },
+      metadata,
+      // The session id identifies the payment; the rental id is added below.
       success_url: `${appUrl}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${appUrl}/checkout/cancel?rental_id=${encodeURIComponent(rental.id)}&customer_id=${encodeURIComponent(user.id)}&equipment_id=${encodeURIComponent(equipment.id)}`,
+      cancel_url: `${appUrl}/checkout/cancel?session_id={CHECKOUT_SESSION_ID}`,
+    })
+
+    const { rental } = await createRental(user.id, {
+      ...input,
+      stripeSessionId: session.id,
+    })
+
+    await stripe.checkout.sessions.update(session.id, {
+      metadata: { ...metadata, rentalId: rental.id },
     })
 
     if (!session.url) {

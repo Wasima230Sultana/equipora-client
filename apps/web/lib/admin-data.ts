@@ -30,6 +30,8 @@ export type AdminRental = {
   bookingDate: string
   requiredQuantity?: number
   totalAmount: number
+  // Bound to the rental when checkout starts.
+  stripeSessionId?: string
   // Added by Stripe confirmation; older/manually-updated bookings may not have them.
   stripePaymentIntentId?: string
   paidAmount?: number

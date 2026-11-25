@@ -51,6 +51,7 @@ export default async function CheckoutSuccessPage({
     // The webhook normally does this. Repeating it here keeps local development
     // (where no webhook is configured) reliable; the backend update is idempotent.
     await updateRentalPayment(customerId, rentalId, {
+      sessionId: session.id,
       paymentStatus: "Paid",
       bookingStatus: "Confirmed",
       paymentIntentId:
