@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from "react"
 
 import { browseApiClient } from "@/lib/browse-api-client"
+import { isVisibleEquipment, visibleEquipment } from "@/lib/browse-equipment"
 import type { Equipment } from "@/lib/owner-equipment"
 
 /** Approved equipment for the current backend query (search/filter/sort). */
@@ -18,7 +19,9 @@ export function useBrowseEquipment(query: string) {
     setError(null)
     try {
       const result = await browseApiClient.list(query)
-      if (requestId === requestIdRef.current) setEquipment(result.equipment)
+      if (requestId === requestIdRef.current) {
+        setEquipment(visibleEquipment(result.equipment))
+      }
     } catch (error) {
       if (requestId === requestIdRef.current) {
         setError(error instanceof Error ? error.message : "Could not load equipment")
@@ -49,7 +52,7 @@ export function useFeaturedEquipment(limit = 6) {
     browseApiClient
       .featured(limit)
       .then((result) => {
-        if (!cancelled) setEquipment(result.equipment)
+        if (!cancelled) setEquipment(visibleEquipment(result.equipment))
       })
       .catch((error: unknown) => {
         if (!cancelled) {
@@ -84,7 +87,11 @@ export function useEquipmentDetails(id: string, enabled: boolean) {
     browseApiClient
       .getById(id)
       .then((result) => {
-        if (!cancelled) setEquipment(result.equipment)
+        if (!cancelled) {
+          setEquipment(
+            isVisibleEquipment(result.equipment) ? result.equipment : null
+          )
+        }
       })
       .catch((error: unknown) => {
         if (!cancelled) {

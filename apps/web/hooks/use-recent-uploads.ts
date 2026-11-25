@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react"
 
+import { visibleEquipment } from "@/lib/browse-equipment"
 import { recentUploadsApiClient } from "@/lib/recent-uploads-api-client"
 import type { RecentUpload } from "@/lib/recent-uploads"
 
@@ -23,7 +24,9 @@ export function useRecentUploads(limit = 4) {
 
     try {
       const result = await recentUploadsApiClient.list(limit)
-      if (requestId === requestIdRef.current) setUploads(result.uploads)
+      if (requestId === requestIdRef.current) {
+        setUploads(visibleEquipment(result.uploads))
+      }
     } catch (error) {
       if (requestId === requestIdRef.current) {
         console.error("[Dashboard UI] recent uploads load failed", error)

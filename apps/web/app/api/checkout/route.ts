@@ -7,7 +7,7 @@ import {
   getEquipment,
   getSignedInUser,
 } from "@/lib/payment-server"
-import { rentalDays } from "@/lib/browse-equipment"
+import { isVisibleEquipment, rentalDays } from "@/lib/browse-equipment"
 import { getStripe } from "@/lib/stripe"
 
 /** Validation stays on the server: ids and dates in the request can be tampered with. */
@@ -56,6 +56,13 @@ export async function POST(request: Request) {
     }
 
     const { equipment } = await getEquipment(input.equipmentId)
+    if (!isVisibleEquipment(equipment)) {
+      return NextResponse.json(
+        { error: "This equipment is not available for booking." },
+        { status: 400 }
+      )
+    }
+
     const days = rentalDays(input.rentalStartDate, input.rentalEndDate)
     const available = Number(equipment.availableQuantity) || 0
 

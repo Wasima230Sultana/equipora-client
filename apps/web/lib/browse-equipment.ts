@@ -1,4 +1,8 @@
-import { EQUIPMENT_CATEGORIES, RENTAL_TYPES } from "@/lib/owner-equipment"
+import {
+  EQUIPMENT_CATEGORIES,
+  HIDDEN_EQUIPMENT_STATUS,
+  RENTAL_TYPES,
+} from "@/lib/owner-equipment"
 import type { Equipment } from "@/lib/owner-equipment"
 
 /** All browse controls live in one object so they can be sent to the backend. */
@@ -53,6 +57,16 @@ export function toBrowseQuery(filters: BrowseFilters): string {
 
 export function isAvailable(equipment: Equipment): boolean {
   return Number(equipment.availableQuantity) > 0
+}
+
+/** Rejected listings must never reach a customer-facing view. */
+export function isVisibleEquipment(equipment: { status: string }): boolean {
+  return equipment.status !== HIDDEN_EQUIPMENT_STATUS
+}
+
+/** Single filter used by every hook that shows equipment to customers. */
+export function visibleEquipment<T extends { status: string }>(items: T[]): T[] {
+  return items.filter(isVisibleEquipment)
 }
 
 /** Inclusive day count used for the booking price estimate. */

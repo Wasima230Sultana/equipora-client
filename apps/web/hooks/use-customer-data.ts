@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react"
 
+import { visibleEquipment } from "@/lib/browse-equipment"
 import { customerApiClient } from "@/lib/customer-api-client"
 import type { CustomerRental } from "@/lib/customer-data"
 import type { Equipment } from "@/lib/owner-equipment"
@@ -56,7 +57,7 @@ export function useCustomerFavorites(customerId: string) {
     setLoading(true)
     try {
       const result = await customerApiClient.listFavorites(customerId)
-      setRows(result.favorites)
+      setRows(visibleEquipment(result.favorites))
       console.log("[Customer UI] favorites loaded", result.favorites.length)
     } catch (error) {
       console.error("[Customer UI] favorites failed", error)

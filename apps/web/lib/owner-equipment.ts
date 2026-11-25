@@ -30,6 +30,9 @@ export const EQUIPMENT_CONDITIONS = [
 ] as const
 export const EQUIPMENT_STATUSES = ["Pending", "Approved", "Rejected"] as const
 
+/** Status set by an admin to take a listing out of customer-facing views. */
+export const HIDDEN_EQUIPMENT_STATUS = "Rejected" as const
+
 // ---------------------------------------------------------------------------
 // Types
 // ---------------------------------------------------------------------------
