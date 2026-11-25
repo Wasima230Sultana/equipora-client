@@ -35,6 +35,39 @@ export function useBrowseEquipment(query: string) {
   return { equipment, loading, error, refresh }
 }
 
+/** Approved listings for the homepage, limited by the backend. */
+export function useFeaturedEquipment(limit = 6) {
+  const [equipment, setEquipment] = useState<Equipment[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+
+  useEffect(() => {
+    let cancelled = false
+    setLoading(true)
+    setError(null)
+
+    browseApiClient
+      .featured(limit)
+      .then((result) => {
+        if (!cancelled) setEquipment(result.equipment)
+      })
+      .catch((error: unknown) => {
+        if (!cancelled) {
+          setError(error instanceof Error ? error.message : "Could not load featured equipment")
+        }
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false)
+      })
+
+    return () => {
+      cancelled = true
+    }
+  }, [limit])
+
+  return { equipment, loading, error }
+}
+
 /** One listing for the signed-in details page; not fetched while locked. */
 export function useEquipmentDetails(id: string, enabled: boolean) {
   const [equipment, setEquipment] = useState<Equipment | null>(null)

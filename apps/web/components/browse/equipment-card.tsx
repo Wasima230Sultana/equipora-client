@@ -9,9 +9,16 @@ import { StatusBadge } from "@/components/dashboard/status-badge"
 import { isAvailable } from "@/lib/browse-equipment"
 import type { Equipment } from "@/lib/owner-equipment"
 
-/** One listing in the browse grid. */
-export function BrowseEquipmentCard({ equipment }: { equipment: Equipment }) {
+/** One listing card. `viewHref` lets the homepage send guests to sign-in. */
+export function BrowseEquipmentCard({
+  equipment,
+  viewHref,
+}: {
+  equipment: Equipment
+  viewHref?: string
+}) {
   const available = isAvailable(equipment)
+  const detailsHref = viewHref ?? `/browse-equipment/${equipment.id}`
 
   return (
     <article className="group flex h-full flex-col overflow-hidden rounded-2xl border border-border bg-card shadow-sm transition-shadow hover:shadow-lg">
@@ -69,7 +76,7 @@ export function BrowseEquipmentCard({ equipment }: { equipment: Equipment }) {
         </div>
 
         <Link
-          href={`/browse-equipment/${equipment.id}`}
+          href={detailsHref}
           className={buttonVariants({ variant: "outline", className: "w-full" })}
         >
           View Details

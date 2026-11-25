@@ -6,6 +6,9 @@ export const browseApiClient = {
   list: (query: string) =>
     apiRequest<{ equipment: Equipment[] }>(`/equipment?${query}`),
 
+  featured: (limit = 6) =>
+    apiRequest<{ equipment: Equipment[] }>(`/equipment/featured?limit=${limit}`),
+
   getById: (id: string) =>
     apiRequest<{ equipment: Equipment }>(`/equipment/${encodeURIComponent(id)}`),
 }
