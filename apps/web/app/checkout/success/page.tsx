@@ -48,8 +48,8 @@ export default async function CheckoutSuccessPage({
       )
     }
 
-    // The webhook normally does this. Repeating it here keeps local development
-    // (where no webhook is configured) reliable; the backend update is idempotent.
+    // This is the single confirmation step: Stripe has verified payment above.
+    // The backend update is idempotent, so a page refresh is harmless.
     await updateRentalPayment(customerId, rentalId, {
       sessionId: session.id,
       paymentStatus: "Paid",

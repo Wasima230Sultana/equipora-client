@@ -1,0 +1,17 @@
+import { loadStripe, type Stripe } from "@stripe/stripe-js"
+
+let stripePromise: Promise<Stripe | null> | undefined
+
+/** Load Stripe.js once with the browser-safe publishable key. */
+export function getStripeClient(): Promise<Stripe | null> {
+  if (!stripePromise) {
+    const publishableKey = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
+    if (!publishableKey) {
+      throw new Error(
+        "NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY is missing. Add it to apps/web/.env.local."
+      )
+    }
+    stripePromise = loadStripe(publishableKey)
+  }
+  return stripePromise
+}

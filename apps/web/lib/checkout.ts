@@ -9,17 +9,24 @@ export type CheckoutInput = {
   requiredQuantity: number
 }
 
-/** Ask the server to create a Stripe Checkout session and return its URL. */
-export async function startCheckout(input: CheckoutInput): Promise<string> {
+export type CheckoutSession = {
+  sessionId: string
+  clientSecret: string
+}
+
+/** Ask the server to create a Stripe Checkout session for this booking. */
+export async function createCheckoutSession(
+  input: CheckoutInput
+): Promise<CheckoutSession> {
   const response = await fetch("/api/checkout", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(input),
   })
 
-  const data = (await response.json()) as { url?: string; error?: string }
-  if (!response.ok || !data.url) {
+  const data = (await response.json()) as CheckoutSession & { error?: string }
+  if (!response.ok || !data.sessionId || !data.clientSecret) {
     throw new Error(data.error ?? "Could not start checkout. Please try again.")
   }
-  return data.url
+  return { sessionId: data.sessionId, clientSecret: data.clientSecret }
 }

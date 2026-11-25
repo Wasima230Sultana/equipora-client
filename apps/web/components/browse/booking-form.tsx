@@ -8,9 +8,10 @@ import { Button } from "@workspace/ui/components/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@workspace/ui/components/card"
 import { Input } from "@workspace/ui/components/input"
 import { BookingSummary } from "@/components/checkout/booking-summary"
+import { EmbeddedCheckout } from "@/components/checkout/embedded-checkout"
 import { FormField, SelectInput } from "@/components/dashboard/form-controls"
 import { isAvailable, rentalDays } from "@/lib/browse-equipment"
-import { startCheckout } from "@/lib/checkout"
+import { createCheckoutSession, type CheckoutSession } from "@/lib/checkout"
 import type { Equipment } from "@/lib/owner-equipment"
 
 /** Booking form that hands the confirmed details over to Stripe Checkout. */
@@ -19,6 +20,7 @@ export function BookingForm({ equipment }: { equipment: Equipment }) {
   const [end, setEnd] = useState("")
   const [quantity, setQuantity] = useState(1)
   const [submitting, setSubmitting] = useState(false)
+  const [checkout, setCheckout] = useState<CheckoutSession | null>(null)
   const today = new Date().toISOString().slice(0, 10)
 
   const days = rentalDays(start, end)
@@ -32,20 +34,29 @@ export function BookingForm({ equipment }: { equipment: Equipment }) {
 
     setSubmitting(true)
     try {
-      const url = await startCheckout({
+      const session = await createCheckoutSession({
         equipmentId: equipment.id,
         rentalStartDate: start,
         rentalEndDate: end,
         requiredQuantity: quantity,
       })
-      // Full-page navigation to Stripe's hosted checkout.
-      window.location.assign(url)
+      setCheckout(session)
     } catch (error) {
       toast.error(
         error instanceof Error ? error.message : "Could not start checkout"
       )
+    } finally {
       setSubmitting(false)
     }
+  }
+
+  if (checkout) {
+    return (
+      <EmbeddedCheckout
+        sessionId={checkout.sessionId}
+        clientSecret={checkout.clientSecret}
+      />
+    )
   }
 
   return (

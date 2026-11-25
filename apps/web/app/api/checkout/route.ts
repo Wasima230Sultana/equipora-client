@@ -34,9 +34,9 @@ function readCheckoutInput(body: unknown): CheckoutInput | null {
 /**
  * POST /api/checkout
  * 1. verify the Better Auth session
- * 2. create a Stripe Checkout session with the booking details in metadata
+ * 2. create an embedded Stripe Checkout session with the booking details in metadata
  * 3. create a pending rental that stores the session id
- * 4. add the rental id to the Stripe session so the return pages can find it
+ * 4. add the rental id to the Stripe session so the success page can find it
  */
 export async function POST(request: Request) {
   try {
@@ -119,9 +119,9 @@ export async function POST(request: Request) {
       // Prefill the customer details so Stripe shows who is booking.
       customer_email: user.email,
       metadata,
-      // The session id identifies the payment; the rental id is added below.
-      success_url: `${appUrl}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${appUrl}/checkout/cancel?session_id={CHECKOUT_SESSION_ID}`,
+      // Embedded Checkout returns here with the session id; the rental id is in metadata.
+      ui_mode: "embedded",
+      return_url: `${appUrl}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
     })
 
     const { rental } = await createRental(user.id, {
@@ -133,10 +133,13 @@ export async function POST(request: Request) {
       metadata: { ...metadata, rentalId: rental.id },
     })
 
-    if (!session.url) {
-      throw new Error("Stripe did not return a checkout URL.")
+    if (!session.client_secret) {
+      throw new Error("Stripe did not return a checkout client secret.")
     }
-    return NextResponse.json({ url: session.url })
+    return NextResponse.json({
+      sessionId: session.id,
+      clientSecret: session.client_secret,
+    })
   } catch (error) {
     console.error("[Checkout] could not create session:", error)
     return NextResponse.json(
