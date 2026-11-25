@@ -14,3 +14,11 @@ export type CustomerRental = {
   paymentStatus: PaymentStatus
   bookingStatus: BookingStatus
 }
+
+/** Fields sent when booking equipment from the details page. */
+export type CreateRentalInput = {
+  equipmentId: string
+  rentalStartDate: string
+  rentalEndDate: string
+  requiredQuantity: number
+}

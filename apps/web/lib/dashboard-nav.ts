@@ -25,17 +25,25 @@ export type DashboardNavItem = {
 export const dashboardNav: Record<DashboardRole, DashboardNavItem[]> = {
   admin: [
     { label: "Overview", href: "/dashboard", icon: LayoutDashboard },
-    { label: "All Users", href: "/dashboard/users", icon: Users },
-    { label: "All Equipment", href: "/dashboard/all-equipment", icon: Truck },
+    { label: "All Users", href: "/dashboard/admin/users", icon: Users },
+    {
+      label: "All Equipment",
+      href: "/dashboard/admin/all-equipment",
+      icon: Truck,
+    },
     {
       label: "All Rentals",
-      href: "/dashboard/all-rentals",
+      href: "/dashboard/admin/all-rentals",
       icon: CalendarRange,
     },
-    { label: "Payments", href: "/dashboard/payments", icon: CreditCard },
+    {
+      label: "Payments",
+      href: "/dashboard/admin/payments",
+      icon: CreditCard,
+    },
     {
       label: "Analytics",
-      href: "/dashboard/analytics",
+      href: "/dashboard/admin/analytics",
       icon: ChartNoAxesCombined,
     },
     { label: "My Profile", href: "/dashboard/profile", icon: UserRound },
