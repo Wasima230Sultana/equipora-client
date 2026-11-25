@@ -27,7 +27,10 @@
   ],
   "dependencies": {
     "@better-auth/mongo-adapter": "^1.7.28",
+    "@stripe/stripe-js": "^10.4.0",
     "better-auth": "^1.7.28",
-    "mongodb": "^7.9.1"
+    "mongodb": "^7.9.1",
+    "next": "^16.4.6",
+    "stripe": "^23.2.0"
   }
 }

@@ -1,27 +1,20 @@
 "use client"
 
 import { useState, type FormEvent } from "react"
-import { useRouter } from "next/navigation"
-import { CalendarCheck } from "lucide-react"
+import { CreditCard, LockKeyhole } from "lucide-react"
 import { toast } from "sonner"
 
 import { Button } from "@workspace/ui/components/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@workspace/ui/components/card"
 import { Input } from "@workspace/ui/components/input"
+import { BookingSummary } from "@/components/checkout/booking-summary"
 import { FormField, SelectInput } from "@/components/dashboard/form-controls"
-import { customerApiClient } from "@/lib/customer-api-client"
 import { isAvailable, rentalDays } from "@/lib/browse-equipment"
+import { startCheckout } from "@/lib/checkout"
 import type { Equipment } from "@/lib/owner-equipment"
 
-/** Booking request form shown to signed-in users on the details page. */
-export function BookingForm({
-  userId,
-  equipment,
-}: {
-  userId: string
-  equipment: Equipment
-}) {
-  const router = useRouter()
+/** Booking form that hands the confirmed details over to Stripe Checkout. */
+export function BookingForm({ equipment }: { equipment: Equipment }) {
   const [start, setStart] = useState("")
   const [end, setEnd] = useState("")
   const [quantity, setQuantity] = useState(1)
@@ -39,20 +32,18 @@ export function BookingForm({
 
     setSubmitting(true)
     try {
-      await customerApiClient.createRental(userId, {
+      const url = await startCheckout({
         equipmentId: equipment.id,
         rentalStartDate: start,
         rentalEndDate: end,
         requiredQuantity: quantity,
       })
-      toast.success("Booking requested", {
-        description: "You can track it in My Rentals.",
-      })
-      router.push("/dashboard/customer/my-rentals")
-      router.refresh()
+      // Full-page navigation to Stripe's hosted checkout.
+      window.location.assign(url)
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : "Could not create booking")
-    } finally {
+      toast.error(
+        error instanceof Error ? error.message : "Could not start checkout"
+      )
       setSubmitting(false)
     }
   }
@@ -100,22 +91,12 @@ export function BookingForm({
             </SelectInput>
           </FormField>
 
-          <div className="space-y-1 rounded-xl bg-muted p-4 text-sm">
-            <p className="flex justify-between">
-              <span className="text-muted-foreground">Rental period</span>
-              <span className="font-medium">{days} day(s)</span>
-            </p>
-            <p className="flex justify-between">
-              <span className="text-muted-foreground">Rate</span>
-              <span className="font-medium">
-                ${equipment.rentalPrice.toLocaleString()} / {equipment.rentalType.toLowerCase()}
-              </span>
-            </p>
-            <p className="flex justify-between border-t border-border pt-2 text-base">
-              <span>Estimated total</span>
-              <span className="font-semibold">${total.toLocaleString()}</span>
-            </p>
-          </div>
+          <BookingSummary
+            days={days}
+            rate={equipment.rentalPrice}
+            quantity={quantity}
+            total={total}
+          />
 
           {!available && (
             <p className="text-sm text-destructive">
@@ -123,10 +104,16 @@ export function BookingForm({
             </p>
           )}
 
-          <Button type="submit" size="lg" className="w-full" disabled={!canSubmit}>
-            <CalendarCheck />
-            {submitting ? "Submitting…" : "Request booking"}
-          </Button>
+          <div>
+            <Button type="submit" size="lg" className="w-full" disabled={!canSubmit}>
+              <CreditCard />
+              {submitting ? "Redirecting to checkout…" : "Continue to payment"}
+            </Button>
+            <p className="mt-2 flex items-center justify-center gap-1.5 text-xs text-muted-foreground">
+              <LockKeyhole className="size-3.5" />
+              Secure checkout powered by Stripe
+            </p>
+          </div>
         </form>
       </CardContent>
     </Card>

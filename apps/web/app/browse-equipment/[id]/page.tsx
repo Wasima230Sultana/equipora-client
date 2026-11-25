@@ -14,6 +14,7 @@ import {
 import { BookingForm } from "@/components/browse/booking-form"
 import { EquipmentDetails } from "@/components/browse/equipment-details"
 import { FavoriteButton } from "@/components/browse/favorite-button"
+import { CustomerDetails } from "@/components/checkout/customer-details"
 import { Container } from "@/components/ui/container"
 import { useEquipmentDetails } from "@/hooks/use-browse-equipment"
 import { useSessionUser } from "@/hooks/use-session-user"
@@ -24,7 +25,7 @@ export default function EquipmentDetailsPage() {
   const params = useParams<{ id: string }>()
   const id = typeof params.id === "string" ? params.id : ""
   const { isPending } = useSession()
-  const { userId } = useSessionUser()
+  const { userId, name, email } = useSessionUser()
   const isLoggedIn = Boolean(userId)
   const { equipment, loading, error } = useEquipmentDetails(
     id,
@@ -100,7 +101,11 @@ export default function EquipmentDetailsPage() {
                   />
                 </CardContent>
               </Card>
-              <BookingForm userId={userId} equipment={equipment} />
+              <CustomerDetails
+                customer={{ name, email }}
+                title="Booking as"
+              />
+              <BookingForm equipment={equipment} />
             </div>
           </div>
         )}
