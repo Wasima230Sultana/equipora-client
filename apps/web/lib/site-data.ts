@@ -44,8 +44,8 @@ export function photo(id: string, width: number, height?: number) {
 }
 
 export const navLinks = [
-  { label: "Home", href: "#home" },
-  { label: "Browse equipment", href: "#equipment" },
+  { label: "Home", href: "/" },
+  { label: "Browse equipment", href: "/browse-equipment" },
   { label: "Categories", href: "#categories" },
   { label: "How it works", href: "#how-it-works" },
   { label: "Why Equipora", href: "#why-equipora" },

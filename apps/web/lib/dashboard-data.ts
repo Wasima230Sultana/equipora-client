@@ -78,29 +78,6 @@ export const dashboardStats: Record<DashboardRole, Stat[]> = {
   ],
 }
 
-export const recentActivity = [
-  {
-    title: "New equipment approved",
-    detail: "CAT 320 Hydraulic Excavator",
-    time: "12 min ago",
-  },
-  {
-    title: "Payment received",
-    detail: "Rental #EQ-2048 · $1,260",
-    time: "1 hour ago",
-  },
-  {
-    title: "New user registered",
-    detail: "fatima@example.com · Owner",
-    time: "3 hours ago",
-  },
-  {
-    title: "Rental completed",
-    detail: "Volvo A40G Dump Truck",
-    time: "Yesterday",
-  },
-]
-
 export const users = [
   {
     id: "USR-1042",

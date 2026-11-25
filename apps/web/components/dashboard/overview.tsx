@@ -12,7 +12,9 @@ import {
 } from "@workspace/ui/components/card"
 import { useSession } from "@/lib/auth-client"
 import { toDashboardRole } from "@/lib/dashboard-nav"
-import { dashboardStats, recentActivity } from "@/lib/dashboard-data"
+import { dashboardStats } from "@/lib/dashboard-data"
+import { formatUploadTime } from "@/lib/recent-uploads"
+import { useRecentUploads } from "@/hooks/use-recent-uploads"
 import { StatCard } from "@/components/dashboard/stat-card"
 
 /** Role-aware dashboard landing page. */
@@ -20,6 +22,7 @@ export function Overview() {
   const { data: session } = useSession()
   const role = toDashboardRole(session?.user.role)
   const firstName = session?.user.name?.split(" ")[0] ?? "there"
+  const { uploads, loading, error } = useRecentUploads()
 
   return (
     <div className="space-y-6">
@@ -54,25 +57,58 @@ export function Overview() {
       <div className="grid gap-4 lg:grid-cols-3">
         <Card className="gap-0 py-0 lg:col-span-2">
           <CardHeader className="border-b border-border px-6 py-5">
-            <CardTitle className="text-base">Recent activity</CardTitle>
+            <CardTitle className="text-base">Recent uploads</CardTitle>
           </CardHeader>
           <CardContent className="px-6 py-2">
-            <ul className="divide-y divide-border">
-              {recentActivity.map((item) => (
-                <li key={item.title} className="flex items-center gap-4 py-4">
-                  <span className="size-2 shrink-0 rounded-full bg-primary" />
-                  <div className="min-w-0 flex-1">
-                    <p className="text-sm font-medium">{item.title}</p>
-                    <p className="truncate text-sm text-muted-foreground">
-                      {item.detail}
-                    </p>
+            {loading ? (
+              <div className="space-y-4 py-4">
+                {Array.from({ length: 3 }).map((_, index) => (
+                  <div key={index} className="flex items-center gap-4">
+                    <span className="size-2 shrink-0 rounded-full bg-muted" />
+                    <div className="min-w-0 flex-1 space-y-2">
+                      <div className="h-3.5 w-40 animate-pulse rounded bg-muted" />
+                      <div className="h-3 w-64 max-w-full animate-pulse rounded bg-muted" />
+                    </div>
                   </div>
-                  <span className="shrink-0 text-xs text-muted-foreground">
-                    {item.time}
-                  </span>
-                </li>
-              ))}
-            </ul>
+                ))}
+              </div>
+            ) : error ? (
+              <p className="py-8 text-center text-sm text-muted-foreground">
+                {error}
+              </p>
+            ) : uploads.length === 0 ? (
+              <p className="py-8 text-center text-sm text-muted-foreground">
+                No equipment has been uploaded yet.
+              </p>
+            ) : (
+              <ul className="divide-y divide-border">
+                {uploads.map((item) => {
+                  const detail = [
+                    item.status,
+                    item.category || "Equipment",
+                    item.ownerName,
+                    item.location,
+                  ]
+                    .filter(Boolean)
+                    .join(" · ")
+
+                  return (
+                    <li key={item.id} className="flex items-center gap-4 py-4">
+                      <span className="size-2 shrink-0 rounded-full bg-primary" />
+                      <div className="min-w-0 flex-1">
+                        <p className="text-sm font-medium">{item.name}</p>
+                        <p className="truncate text-sm text-muted-foreground">
+                          {detail}
+                        </p>
+                      </div>
+                      <span className="shrink-0 text-xs text-muted-foreground">
+                        {formatUploadTime(item.createdAt)}
+                      </span>
+                    </li>
+                  )
+                })}
+              </ul>
+            )}
           </CardContent>
         </Card>
 
