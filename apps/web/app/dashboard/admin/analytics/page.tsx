@@ -1,4 +1,4 @@
-import { TrendingUp } from "lucide-react"
+"use client"
 
 import {
   Card,
@@ -6,48 +6,64 @@ import {
   CardHeader,
   CardTitle,
 } from "@workspace/ui/components/card"
+import { AdminDataStatus } from "@/components/dashboard/admin/admin-data-status"
+import { AdminKeyMetrics } from "@/components/dashboard/admin/admin-key-metrics"
 import { DashboardPage } from "@/components/dashboard/dashboard-page"
 import { RevenueChart } from "@/components/dashboard/revenue-chart"
 import { StatCard } from "@/components/dashboard/stat-card"
-import { analytics, dashboardStats, earnings } from "@/lib/dashboard-data"
+import { useAdminAnalytics, useAdminId } from "@/hooks/use-admin-data"
+import { adminSummaryMetrics, adminSummaryStats } from "@/lib/admin-analytics"
 
 export default function AnalyticsPage() {
+  const { adminId } = useAdminId()
+  const { summary, loading, error } = useAdminAnalytics(adminId)
+  const stats = adminSummaryStats(summary)
+  const metrics = adminSummaryMetrics(summary)
+  const hasRevenue = summary.monthlyRevenue.some((month) => month.amount > 0)
+
   return (
     <DashboardPage
       title="Analytics"
       description="A snapshot of marketplace performance."
     >
-      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        {dashboardStats.admin.map((stat) => (
-          <StatCard key={stat.label} stat={stat} />
-        ))}
-      </div>
+      <AdminDataStatus
+        loading={loading}
+        error={error}
+        count={summary.totalBookings}
+        label="bookings analysed"
+      />
 
-      <div className="grid gap-4 lg:grid-cols-3">
-        <div className="lg:col-span-2">
-          <RevenueChart data={earnings} />
+      {!loading && !error && (
+        <div className="space-y-4">
+          <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+            {stats.map((stat) => (
+              <StatCard key={stat.label} stat={stat} />
+            ))}
+          </div>
+
+          <div className="grid gap-4 lg:grid-cols-3">
+            <div className="lg:col-span-2">
+              {hasRevenue ? (
+                <RevenueChart
+                  data={summary.monthlyRevenue}
+                  title="Revenue from paid bookings"
+                />
+              ) : (
+                <Card className="gap-0 py-0">
+                  <CardHeader className="border-b border-border px-6 py-5">
+                    <CardTitle className="text-base">Monthly revenue</CardTitle>
+                  </CardHeader>
+                  <CardContent className="px-6 py-8 text-sm text-muted-foreground">
+                    No paid bookings have been recorded yet.
+                  </CardContent>
+                </Card>
+              )}
+            </div>
+
+            <AdminKeyMetrics metrics={metrics} />
+          </div>
         </div>
-
-        <Card className="gap-0 py-0">
-          <CardHeader className="border-b border-border px-6 py-5">
-            <CardTitle className="text-base">Key metrics</CardTitle>
-          </CardHeader>
-          <CardContent className="px-6 py-2">
-            <ul className="divide-y divide-border">
-              {analytics.map((item) => (
-                <li key={item.label} className="py-4">
-                  <div className="flex items-center gap-2">
-                    <TrendingUp className="size-4 text-primary" />
-                    <p className="text-sm font-medium">{item.label}</p>
-                  </div>
-                  <p className="mt-1 text-xl font-semibold">{item.value}</p>
-                  <p className="text-xs text-muted-foreground">{item.change}</p>
-                </li>
-              ))}
-            </ul>
-          </CardContent>
-        </Card>
-      </div>
+      )}
     </DashboardPage>
   )
 }

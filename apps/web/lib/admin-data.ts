@@ -28,7 +28,12 @@ export type AdminRental = {
   rentalStartDate: string
   rentalEndDate: string
   bookingDate: string
+  requiredQuantity?: number
   totalAmount: number
+  // Added by Stripe confirmation; older/manually-updated bookings may not have them.
+  stripePaymentIntentId?: string
+  paidAmount?: number
+  currency?: string
   paymentStatus: PaymentStatus
   bookingStatus: BookingStatus
 }

@@ -227,54 +227,6 @@ export const myRentals = [
   },
 ]
 
-export const payments = [
-  {
-    id: "PAY-9081",
-    rental: "RNT-2048",
-    customer: "Daniel Ross",
-    amount: "$2,940",
-    method: "Card",
-    status: "Paid",
-    date: "Nov 20, 2026",
-  },
-  {
-    id: "PAY-9082",
-    rental: "RNT-2049",
-    customer: "Priya Nair",
-    amount: "$2,160",
-    method: "Bank transfer",
-    status: "Paid",
-    date: "Nov 18, 2026",
-  },
-  {
-    id: "PAY-9083",
-    rental: "RNT-2050",
-    customer: "Marcus Bell",
-    amount: "$6,230",
-    method: "Card",
-    status: "Pending",
-    date: "Nov 22, 2026",
-  },
-  {
-    id: "PAY-9084",
-    rental: "RNT-2051",
-    customer: "Aisha Karim",
-    amount: "$1,260",
-    method: "Wallet",
-    status: "Paid",
-    date: "Nov 25, 2026",
-  },
-]
-
-export const earnings = [
-  { month: "Jun", amount: 8400 },
-  { month: "Jul", amount: 10200 },
-  { month: "Aug", amount: 9100 },
-  { month: "Sep", amount: 11800 },
-  { month: "Oct", amount: 11200 },
-  { month: "Nov", amount: 13400 },
-]
-
 export const payouts = [
   { id: "PO-3401", date: "Nov 20, 2026", amount: "$3,120", status: "Paid" },
   { id: "PO-3402", date: "Nov 13, 2026", amount: "$2,480", status: "Paid" },
@@ -286,13 +238,3 @@ export const payouts = [
   },
 ]
 
-export const analytics = [
-  { label: "Equipment bookings", value: "348", change: "+8.2% vs last month" },
-  { label: "New listings", value: "126", change: "+14.6% vs last month" },
-  {
-    label: "Average rental value",
-    value: "$1,840",
-    change: "+3.1% vs last month",
-  },
-  { label: "Customer retention", value: "82%", change: "+5.4% vs last month" },
-]

@@ -1,8 +1,9 @@
 "use client"
 
-import { useCallback, useEffect, useRef, useState } from "react"
+import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 
 import { useSessionUser } from "@/hooks/use-session-user"
+import { buildAdminSummary } from "@/lib/admin-analytics"
 import { adminApiClient } from "@/lib/admin-api-client"
 import type { AdminRental, AdminUser } from "@/lib/admin-data"
 import type { Equipment } from "@/lib/owner-equipment"
@@ -69,4 +70,29 @@ export function useAdminEquipment(adminId: string) {
 
 export function useAdminRentals(adminId: string) {
   return useAdminList<AdminRental>(adminId, fetchRentals)
+}
+
+/** One shared source of truth for the admin analytics figures. */
+export function useAdminAnalytics(adminId: string) {
+  const rentals = useAdminRentals(adminId)
+  const users = useAdminUsers(adminId)
+  const equipment = useAdminEquipment(adminId)
+
+  const summary = useMemo(
+    () => buildAdminSummary(rentals.rows, users.rows, equipment.rows),
+    [rentals.rows, users.rows, equipment.rows]
+  )
+
+  const refresh = useCallback(() => {
+    void rentals.refresh()
+    void users.refresh()
+    void equipment.refresh()
+  }, [rentals.refresh, users.refresh, equipment.refresh])
+
+  return {
+    summary,
+    loading: rentals.loading || users.loading || equipment.loading,
+    error: rentals.error ?? users.error ?? equipment.error,
+    refresh,
+  }
 }

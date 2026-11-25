@@ -1,31 +1,50 @@
+"use client"
+
+import { useMemo } from "react"
+
+import { AdminDataStatus } from "@/components/dashboard/admin/admin-data-status"
 import { DashboardPage } from "@/components/dashboard/dashboard-page"
 import {
   DataTable,
   type DataTableColumn,
 } from "@/components/dashboard/data-table"
 import { StatusBadge } from "@/components/dashboard/status-badge"
-import { payments } from "@/lib/dashboard-data"
+import { useAdminId, useAdminRentals } from "@/hooks/use-admin-data"
+import { formatDate } from "@/lib/admin-data"
+import { buildAdminPayments, type AdminPaymentRow } from "@/lib/admin-analytics"
 
-type PaymentRow = (typeof payments)[number]
-
-const columns: DataTableColumn<PaymentRow>[] = [
-  { key: "id", header: "Payment", render: (row) => row.id },
+/** Payment references, amounts and statuses derived from live admin rentals. */
+const columns: DataTableColumn<AdminPaymentRow>[] = [
   {
-    key: "rental",
-    header: "Rental",
+    key: "id",
+    header: "Payment",
     render: (row) => (
       <div>
-        <p className="font-medium">{row.rental}</p>
-        <p className="text-xs text-muted-foreground">{row.customer}</p>
+        <p className="font-medium">{row.id}</p>
+        <p className="text-xs text-muted-foreground">{row.rentalId}</p>
+      </div>
+    ),
+  },
+  {
+    key: "customer",
+    header: "Customer",
+    render: (row) => (
+      <div>
+        <p className="font-medium">{row.customer}</p>
+        <p className="text-xs text-muted-foreground">{row.customerEmail}</p>
       </div>
     ),
   },
   { key: "method", header: "Method", render: (row) => row.method },
-  { key: "date", header: "Date", render: (row) => row.date },
+  { key: "date", header: "Date", render: (row) => formatDate(row.date) },
   {
     key: "amount",
     header: "Amount",
-    render: (row) => <span className="font-medium">{row.amount}</span>,
+    render: (row) => (
+      <span className="font-medium">
+        {row.currency} {row.amount.toLocaleString()}
+      </span>
+    ),
   },
   {
     key: "status",
@@ -35,12 +54,28 @@ const columns: DataTableColumn<PaymentRow>[] = [
 ]
 
 export default function PaymentsPage() {
+  const { adminId } = useAdminId()
+  const { rows, loading, error } = useAdminRentals(adminId)
+  const payments = useMemo(() => buildAdminPayments(rows), [rows])
+
   return (
     <DashboardPage
       title="Payments"
       description="A record of every transaction on Equipora."
     >
-      <DataTable columns={columns} rows={payments} />
+      <AdminDataStatus
+        loading={loading}
+        error={error}
+        count={payments.length}
+        label="payments"
+      />
+      {!loading && !error && (
+        <DataTable
+          columns={columns}
+          rows={payments}
+          emptyMessage="No payments have been recorded yet."
+        />
+      )}
     </DashboardPage>
   )
 }
