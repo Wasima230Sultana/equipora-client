@@ -1,81 +1,12 @@
-import {
-  CircleDollarSign,
-  ClipboardList,
-  Heart,
-  PackagePlus,
-  Star,
-  TrendingUp,
-  Truck,
-  Users,
-  Wallet,
-  type LucideIcon,
-} from "lucide-react"
+import type { LucideIcon } from "lucide-react"
 
-import type { DashboardRole } from "@/lib/dashboard-nav"
-
-/** Dummy dashboard content. Replace with API data when the backend is ready. */
+/** Legacy dummy dashboard data; live screens derive their figures from the backend. */
 
 export type Stat = {
   label: string
   value: string
   change?: string
   icon: LucideIcon
-}
-
-export const dashboardStats: Record<DashboardRole, Stat[]> = {
-  admin: [
-    {
-      label: "Total revenue",
-      value: "$128,430",
-      change: "+12.5%",
-      icon: CircleDollarSign,
-    },
-    {
-      label: "Active rentals",
-      value: "348",
-      change: "+8.2%",
-      icon: ClipboardList,
-    },
-    { label: "Total users", value: "12,480", change: "+5.1%", icon: Users },
-    { label: "Equipment listed", value: "2,540", change: "+3.8%", icon: Truck },
-  ],
-  owner: [
-    {
-      label: "My equipment",
-      value: "18",
-      change: "+2 this month",
-      icon: PackagePlus,
-    },
-    {
-      label: "Active rentals",
-      value: "7",
-      change: "+3 this week",
-      icon: ClipboardList,
-    },
-    {
-      label: "Earnings this month",
-      value: "$12,480",
-      change: "+9.4%",
-      icon: Wallet,
-    },
-    {
-      label: "Average rating",
-      value: "4.9",
-      change: "from 216 reviews",
-      icon: Star,
-    },
-  ],
-  customer: [
-    {
-      label: "My rentals",
-      value: "4",
-      change: "+1 this month",
-      icon: ClipboardList,
-    },
-    { label: "Active rentals", value: "1", icon: Truck },
-    { label: "Saved machines", value: "6", icon: Heart },
-    { label: "Wallet balance", value: "$1,200", icon: Wallet },
-  ],
 }
 
 export const users = [

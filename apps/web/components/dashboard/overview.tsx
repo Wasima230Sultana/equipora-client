@@ -10,18 +10,15 @@ import {
   CardHeader,
   CardTitle,
 } from "@workspace/ui/components/card"
-import { useSession } from "@/lib/auth-client"
-import { toDashboardRole } from "@/lib/dashboard-nav"
-import { dashboardStats } from "@/lib/dashboard-data"
-import { formatUploadTime } from "@/lib/recent-uploads"
+import { DashboardStatsGrid } from "@/components/dashboard/dashboard-stats-grid"
+import { useDashboardStats } from "@/hooks/use-dashboard-stats"
 import { useRecentUploads } from "@/hooks/use-recent-uploads"
-import { StatCard } from "@/components/dashboard/stat-card"
+import { formatUploadTime } from "@/lib/recent-uploads"
 
 /** Role-aware dashboard landing page. */
 export function Overview() {
-  const { data: session } = useSession()
-  const role = toDashboardRole(session?.user.role)
-  const firstName = session?.user.name?.split(" ")[0] ?? "there"
+  const { role, firstName, stats, loading: statsLoading, error: statsError } =
+    useDashboardStats()
   const { uploads, loading, error } = useRecentUploads()
 
   return (
@@ -48,11 +45,11 @@ export function Overview() {
         </Link>
       </div>
 
-      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        {dashboardStats[role].map((stat) => (
-          <StatCard key={stat.label} stat={stat} />
-        ))}
-      </div>
+      <DashboardStatsGrid
+        stats={stats}
+        loading={statsLoading}
+        error={statsError}
+      />
 
       <div className="grid gap-4 lg:grid-cols-3">
         <Card className="gap-0 py-0 lg:col-span-2">
