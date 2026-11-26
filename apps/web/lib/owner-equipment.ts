@@ -92,25 +92,24 @@ export type EquipmentInput = {
   terms: string
 }
 
-export type RentalCustomer = {
-  name: string
-  email: string
-  phone: string
-}
-
+/** Booking row returned by `/owner/:ownerId/rentals`.
+ * Customer details are not joined by that endpoint; they come from `/profile/:id`. */
 export type OwnerRental = {
-  id: string
-  ownerId: string
+  _id: string
+  customerId: string
   equipmentId: string
   equipmentName: string
   equipmentImage: string
-  customer: RentalCustomer
-  duration: string
+  rentalStartDate: string
+  rentalEndDate: string
+  bookingDate: string
   requiredQuantity: number
-  bookingAmount: number
+  totalAmount: number
+  paidAmount?: number
+  currency?: string
+  stripePaymentIntentId?: string
   paymentStatus: PaymentStatus
   bookingStatus: BookingStatus
-  createdAt: string
 }
 
 // ---------------------------------------------------------------------------

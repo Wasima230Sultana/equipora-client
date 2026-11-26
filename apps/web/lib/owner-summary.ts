@@ -25,6 +25,11 @@ const paymentStatuses: PaymentStatus[] = [
   "Refunded",
 ]
 
+/** Backend rentals use `totalAmount`; fall back to it when `paidAmount` is absent. */
+function bookingAmount(rental: OwnerRental) {
+  return Number(rental.paidAmount ?? rental.totalAmount) || 0
+}
+
 export function buildOwnerSummary(
   equipment: Equipment[],
   rentals: OwnerRental[]
@@ -39,7 +44,7 @@ export function buildOwnerSummary(
 
   const paidEarnings = rentals
     .filter((rental) => rental.paymentStatus === "Paid")
-    .reduce((total, rental) => total + rental.bookingAmount, 0)
+    .reduce((total, rental) => total + bookingAmount(rental), 0)
 
   const activeRentals = rentals.filter((rental) =>
     ["Active", "Confirmed"].includes(rental.bookingStatus)
@@ -47,11 +52,11 @@ export function buildOwnerSummary(
 
   const monthly = new Map<string, number>()
   for (const rental of rentals) {
-    if (!rental.createdAt) continue
-    const month = new Date(rental.createdAt).toLocaleString("en-US", {
+    if (!rental.bookingDate) continue
+    const month = new Date(rental.bookingDate).toLocaleString("en-US", {
       month: "short",
     })
-    monthly.set(month, (monthly.get(month) ?? 0) + rental.bookingAmount)
+    monthly.set(month, (monthly.get(month) ?? 0) + bookingAmount(rental))
   }
 
   const paymentBreakdown = paymentStatuses.map((status) => {
@@ -59,7 +64,7 @@ export function buildOwnerSummary(
     return {
       status,
       count: matching.length,
-      amount: matching.reduce((total, rental) => total + rental.bookingAmount, 0),
+      amount: matching.reduce((total, rental) => total + bookingAmount(rental), 0),
     }
   })
 

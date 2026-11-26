@@ -5,29 +5,45 @@ import {
   type DataTableColumn,
 } from "@/components/dashboard/data-table"
 import { StatusBadge } from "@/components/dashboard/status-badge"
+import { useCustomerProfiles } from "@/hooks/use-customer-profiles"
 import { useOwnerRentals } from "@/hooks/use-owner-data"
+import { rentalDays } from "@/lib/browse-equipment"
 import type { OwnerRental } from "@/lib/owner-equipment"
 
 type EquipmentRentalsTableProps = {
   ownerId: string
 }
 
+function formatDate(value: string) {
+  if (!value) return "—"
+  const date = new Date(value)
+  return Number.isNaN(date.getTime()) ? value : date.toLocaleDateString()
+}
+
 /** Bookings for equipment owned by the logged-in owner. */
 export function EquipmentRentalsTable({ ownerId }: EquipmentRentalsTableProps) {
   const { rows, loading, error } = useOwnerRentals(ownerId)
+  const customers = useCustomerProfiles(rows.map((row) => row.customerId))
   console.log("[Owner UI] EquipmentRentalsTable rendering", rows.length, "booking(s)")
 
   const columns: DataTableColumn<OwnerRental>[] = [
     {
       key: "customer",
       header: "Customer Information",
-      render: (row) => (
-        <div>
-          <p className="font-medium">{row.customer.name}</p>
-          <p className="text-xs text-muted-foreground">{row.customer.email}</p>
-          <p className="text-xs text-muted-foreground">{row.customer.phone}</p>
-        </div>
-      ),
+      render: (row) => {
+        const customer = customers[row.customerId]
+        return (
+          <div>
+            <p className="font-medium">{customer?.name ?? row.customerId}</p>
+            {customer?.email && (
+              <p className="text-xs text-muted-foreground">{customer.email}</p>
+            )}
+            {customer?.phone && (
+              <p className="text-xs text-muted-foreground">{customer.phone}</p>
+            )}
+          </div>
+        )
+      },
     },
     {
       key: "equipment",
@@ -42,7 +58,16 @@ export function EquipmentRentalsTable({ ownerId }: EquipmentRentalsTableProps) {
     {
       key: "duration",
       header: "Rental Duration",
-      render: (row) => row.duration,
+      render: (row) => (
+        <div>
+          <p>
+            {formatDate(row.rentalStartDate)} – {formatDate(row.rentalEndDate)}
+          </p>
+          <p className="text-xs text-muted-foreground">
+            {rentalDays(row.rentalStartDate, row.rentalEndDate)} day(s)
+          </p>
+        </div>
+      ),
     },
     {
       key: "quantity",
@@ -54,7 +79,7 @@ export function EquipmentRentalsTable({ ownerId }: EquipmentRentalsTableProps) {
       header: "Booking Amount",
       render: (row) => (
         <span className="font-medium">
-          ${row.bookingAmount.toLocaleString()}
+          ${Number(row.totalAmount).toLocaleString()}
         </span>
       ),
     },
