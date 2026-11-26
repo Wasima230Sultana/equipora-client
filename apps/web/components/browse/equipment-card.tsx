@@ -22,18 +22,23 @@ export function BrowseEquipmentCard({
 
   return (
     <article className="group flex h-full flex-col overflow-hidden rounded-2xl border border-border bg-card shadow-sm transition-shadow hover:shadow-lg">
-      <div className="relative aspect-[4/3] bg-muted">
-        {equipment.image ? (
-          <img
-            src={equipment.image}
-            alt={equipment.name}
-            className="size-full object-cover transition-transform duration-300 group-hover:scale-105"
-          />
-        ) : (
-          <div className="grid size-full place-items-center text-muted-foreground">
-            <Package className="size-10" />
-          </div>
-        )}
+      <div className="relative aspect-[4/3] overflow-hidden bg-muted">
+  {equipment.image ? (
+    <img
+      // key={equipment._id}
+      src={equipment.image}
+      alt={equipment.name}
+      className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+      loading="lazy"
+      onError={(e) => {
+        e.currentTarget.style.display = "none"
+      }}
+    />
+  ) : (
+    <div className="grid size-full place-items-center text-muted-foreground">
+      <Package className="size-10" />
+    </div>
+  )}
         <Badge
           variant={available ? "success" : "destructive"}
           className="absolute top-3 left-3 bg-background/95 shadow-sm"

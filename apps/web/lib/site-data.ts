@@ -46,9 +46,9 @@ export function photo(id: string, width: number, height?: number) {
 export const navLinks = [
   { label: "Home", href: "/" },
   { label: "Browse equipment", href: "/browse-equipment" },
-  { label: "Categories", href: "#categories" },
-  { label: "How it works", href: "#how-it-works" },
-  { label: "Why Equipora", href: "#why-equipora" },
+  // { label: "Categories", href: "#categories" },
+  // { label: "How it works", href: "#how-it-works" },
+  // { label: "Why Equipora", href: "#why-equipora" },
 ]
 
 export const heroImage = photo("1495036019936-220b29b930ea", 2000, 1100)
