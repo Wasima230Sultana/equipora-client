@@ -34,13 +34,13 @@ export function buildOwnerSummary(
   equipment: Equipment[],
   rentals: OwnerRental[]
 ): OwnerSummary {
-  console.log(
-    "[Owner Summary] computing from",
-    equipment.length,
-    "listing(s) and",
-    rentals.length,
-    "booking(s)"
-  )
+  // console.log(
+  //   "[Owner Summary] computing from",
+  //   equipment.length,
+  //   "listing(s) and",
+  //   rentals.length,
+  //   "booking(s)"
+  // )
 
   const paidEarnings = rentals
     .filter((rental) => rental.paymentStatus === "Paid")

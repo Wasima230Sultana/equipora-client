@@ -113,7 +113,7 @@ export function SignUpForm() {
         />
       </div>
 
-      <PhotoField value={photo} onChange={setPhoto} />
+      <PhotoField value={photo} onChange={setPhoto} name={name} />
 
       <RoleSelect value={role} onChange={setRole} />
 

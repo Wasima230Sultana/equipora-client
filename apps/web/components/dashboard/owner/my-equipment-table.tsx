@@ -40,7 +40,7 @@ export function MyEquipmentTable({ owner, ownerId }: MyEquipmentTableProps) {
   const [editing, setEditing] = useState<Equipment | null>(null)
   const [deleting, setDeleting] = useState<Equipment | null>(null)
 
-  console.log("[Owner UI] MyEquipmentTable rendering", rows.length, "item(s)")
+  // console.log("[Owner UI] MyEquipmentTable rendering", rows.length, "item(s)")
 
   async function confirmDelete() {
     if (!deleting) return
@@ -48,7 +48,7 @@ export function MyEquipmentTable({ owner, ownerId }: MyEquipmentTableProps) {
 
     try {
       await ownerApiClient.deleteEquipment(ownerId, deleting.id)
-      console.log("[Owner UI] delete succeeded", deleting.id)
+      // console.log("[Owner UI] delete succeeded", deleting.id)
       toast.success("Equipment deleted")
       setDeleting(null)
       await refresh()
@@ -117,7 +117,7 @@ export function MyEquipmentTable({ owner, ownerId }: MyEquipmentTableProps) {
             title="View details"
             aria-label={`View details for ${row.name}`}
             onClick={() => {
-              console.log("[Owner UI] view details clicked", row.id)
+              // console.log("[Owner UI] view details clicked", row.id)
               setViewing(row)
             }}
           >
@@ -130,7 +130,7 @@ export function MyEquipmentTable({ owner, ownerId }: MyEquipmentTableProps) {
             title="Update"
             aria-label={`Update ${row.name}`}
             onClick={() => {
-              console.log("[Owner UI] update clicked", row.id)
+              // console.log("[Owner UI] update clicked", row.id)
               setEditing(row)
             }}
           >

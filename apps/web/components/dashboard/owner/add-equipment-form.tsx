@@ -65,7 +65,7 @@ export function AddEquipmentForm({
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault()
-    console.log("[Owner UI] submit clicked for", form.name)
+    // console.log("[Owner UI] submit clicked for", form.name)
 
     const isValid =
       form.name.trim() !== "" &&
@@ -81,7 +81,7 @@ export function AddEquipmentForm({
 
     setSaving(true)
     try {
-      console.log("[Owner UI] sending", editingId ? "PATCH" : "POST", "equipment")
+      // console.log("[Owner UI] sending", editingId ? "PATCH" : "POST", "equipment")
 
       const result = editingId
         ? await ownerApiClient.updateEquipment(ownerId, editingId, form)
@@ -268,7 +268,7 @@ export function AddEquipmentForm({
           id="equipment-image"
           value={form.image}
           onChange={(url) => {
-            console.log("[Owner UI] image value changed", url ? "set" : "cleared")
+            // console.log("[Owner UI] image value changed", url ? "set" : "cleared")
             setValue("image", url)
           }}
         />
@@ -347,7 +347,7 @@ export function AddEquipmentForm({
             size="lg"
             className="h-11"
             onClick={() => {
-              console.log("[Owner UI] form cancelled")
+              // console.log("[Owner UI] form cancelled")
               onCancel()
             }}
           >

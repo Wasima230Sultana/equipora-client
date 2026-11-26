@@ -16,7 +16,7 @@ export function useCustomerRentals(customerId: string) {
   useEffect(() => {
     if (!customerId) return
     let cancelled = false
-    console.log("[Customer UI] loading rentals", customerId)
+    // console.log("[Customer UI] loading rentals", customerId)
     setLoading(true)
 
     customerApiClient
@@ -24,12 +24,12 @@ export function useCustomerRentals(customerId: string) {
       .then((result) => {
         if (!cancelled) {
           setRows(result.rentals)
-          console.log("[Customer UI] rentals loaded", result.rentals.length)
+          // console.log("[Customer UI] rentals loaded", result.rentals.length)
         }
       })
       .catch((error: unknown) => {
         if (!cancelled) {
-          console.error("[Customer UI] rentals failed", error)
+          // console.error("[Customer UI] rentals failed", error)
           setError(error instanceof Error ? error.message : "Could not load rentals")
         }
       })
@@ -53,14 +53,14 @@ export function useCustomerFavorites(customerId: string) {
 
   const refresh = useCallback(async () => {
     if (!customerId) return
-    console.log("[Customer UI] loading favorites", customerId)
+    // console.log("[Customer UI] loading favorites", customerId)
     setLoading(true)
     try {
       const result = await customerApiClient.listFavorites(customerId)
       setRows(visibleEquipment(result.favorites))
-      console.log("[Customer UI] favorites loaded", result.favorites.length)
+      // console.log("[Customer UI] favorites loaded", result.favorites.length)
     } catch (error) {
-      console.error("[Customer UI] favorites failed", error)
+      // console.error("[Customer UI] favorites failed", error)
       setError(error instanceof Error ? error.message : "Could not load favorites")
     } finally {
       setLoading(false)

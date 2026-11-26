@@ -48,7 +48,7 @@ export function ProfileForm() {
   useEffect(() => {
     if (!userId) return
     let cancelled = false
-    console.log("[Profile UI] loading profile from backend", userId)
+    // console.log("[Profile UI] loading profile from backend", userId)
     setLoading(true)
 
     profileApiClient
@@ -93,7 +93,7 @@ export function ProfileForm() {
 
     setSaving(true)
     try {
-      console.log("[Profile UI] saving profile", userId)
+      // console.log("[Profile UI] saving profile", userId)
       const result = await profileApiClient.updateProfile(userId, {
         name: form.name.trim(),
         email: form.email.trim(),
@@ -105,7 +105,7 @@ export function ProfileForm() {
       // Keep the Better Auth session in sync with the database values.
       await refetch()
       router.refresh()
-      console.log("[Profile UI] profile saved", result.profile.id)
+      // console.log("[Profile UI] profile saved", result.profile.id)
       toast.success("Profile updated successfully")
     } catch (error) {
       console.error("[Profile UI] profile save failed", error)
@@ -205,6 +205,7 @@ export function ProfileForm() {
                 id="profile-photo"
                 value={form.image}
                 onChange={(url) => setValue("image", url)}
+                name={form.name}
               />
             </div>
 

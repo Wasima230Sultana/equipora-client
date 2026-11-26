@@ -18,7 +18,7 @@ export async function apiRequest<T>(
   path: string,
   { token, ...init }: BackendRequestInit = {}
 ): Promise<T> {
-  console.log("[Backend Client]", init.method ?? "GET", path)
+  // console.log("[Backend Client]", init.method ?? "GET", path)
 
   const headers = new Headers(init.headers)
   headers.set("Content-Type", "application/json")
@@ -36,6 +36,6 @@ export async function apiRequest<T>(
     )
   }
 
-  console.log("[Backend Client] success", path)
+  // console.log("[Backend Client] success", path)
   return result as T
 }

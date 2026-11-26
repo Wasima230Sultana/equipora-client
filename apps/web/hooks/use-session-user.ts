@@ -6,7 +6,7 @@ import { useSession } from "@/lib/auth-client"
 export function useSessionUser() {
   const { data: session, isPending } = useSession()
   const user = session?.user
-  console.log("[Session] user id:", user?.id ?? "none")
+  // console.log("[Session] user id:", user?.id ?? "none")
 
   return {
     userId: user?.id ?? "",

@@ -29,7 +29,7 @@ export function FavoritesTable({ customerId }: { customerId: string }) {
     console.log("[Customer UI] remove favorite", removing.id)
     try {
       await customerApiClient.removeFavorite(customerId, removing.id)
-      console.log("[Customer UI] favorite removed", removing.id)
+      // console.log("[Customer UI] favorite removed", removing.id)
       toast.success("Removed from favorites")
       setRemoving(null)
       await refresh()
@@ -86,7 +86,7 @@ export function FavoritesTable({ customerId }: { customerId: string }) {
             title="View Details"
             aria-label={`View details for ${row.name}`}
             onClick={() => {
-              console.log("[Customer UI] view details", row.id)
+              // console.log("[Customer UI] view details", row.id)
               setViewing(row)
             }}
           >
@@ -99,7 +99,7 @@ export function FavoritesTable({ customerId }: { customerId: string }) {
             title="Remove Favorite"
             aria-label={`Remove ${row.name} from favorites`}
             onClick={() => {
-              console.log("[Customer UI] remove clicked", row.id)
+              // console.log("[Customer UI] remove clicked", row.id)
               setRemoving(row)
             }}
           >
