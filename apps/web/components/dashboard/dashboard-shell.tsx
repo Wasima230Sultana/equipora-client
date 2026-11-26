@@ -16,6 +16,7 @@ import {
 } from "@/lib/dashboard-nav"
 import { UserMenu } from "@/components/layout/user-menu"
 import { BrandLogo } from "@/components/ui/brand-logo"
+import { ThemeToggle } from "@/components/ui/theme-toggle"
 
 /** Shared dashboard chrome: role-based sidebar, topbar and route guard. */
 export function DashboardShell({ children }: { children: ReactNode }) {
@@ -162,6 +163,7 @@ export function DashboardShell({ children }: { children: ReactNode }) {
                 className="h-9 w-48 pl-9 lg:w-56"
               />
             </div>
+            <ThemeToggle />
             <button
               type="button"
               aria-label="Notifications"

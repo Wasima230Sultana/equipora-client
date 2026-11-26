@@ -9,6 +9,7 @@ import { useSession } from "@/lib/auth-client"
 import { BrandLogo } from "@/components/ui/brand-logo"
 import { Container } from "@/components/ui/container"
 import { UserMenu } from "@/components/layout/user-menu"
+import { ThemeToggle } from "@/components/ui/theme-toggle"
 import { navLinks } from "@/lib/site-data"
 import Link from "next/link"
 
@@ -42,6 +43,7 @@ export function SiteHeader() {
           </nav>
 
           <div className="hidden items-center gap-2 lg:flex">
+            <ThemeToggle />
             {isPending ? (
               <span className="size-9 animate-pulse rounded-full bg-muted" />
             ) : isLoggedIn ? (
@@ -78,15 +80,22 @@ export function SiteHeader() {
             )}
           </div>
 
-          <button
-            type="button"
-            aria-label={menuOpen ? "Close menu" : "Open menu"}
-            aria-expanded={menuOpen}
-            onClick={() => setMenuOpen((open) => !open)}
-            className="grid size-10 place-items-center rounded-xl border border-border text-foreground transition-colors hover:bg-muted lg:hidden"
-          >
-            {menuOpen ? <X className="size-5" /> : <Menu className="size-5" />}
-          </button>
+          <div className="flex items-center gap-2 lg:hidden">
+            <ThemeToggle className="size-10 rounded-xl" />
+            <button
+              type="button"
+              aria-label={menuOpen ? "Close menu" : "Open menu"}
+              aria-expanded={menuOpen}
+              onClick={() => setMenuOpen((open) => !open)}
+              className="grid size-10 place-items-center rounded-xl border border-border text-foreground transition-colors hover:bg-muted"
+            >
+              {menuOpen ? (
+                <X className="size-5" />
+              ) : (
+                <Menu className="size-5" />
+              )}
+            </button>
+          </div>
         </div>
       </Container>
 
