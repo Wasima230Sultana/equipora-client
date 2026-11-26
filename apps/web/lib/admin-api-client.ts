@@ -1,4 +1,4 @@
-import { apiRequest } from "@/lib/backend-client"
+import { apiRequest } from "@/lib/backend-auth-client"
 import type {
   AdminRental,
   AdminUser,

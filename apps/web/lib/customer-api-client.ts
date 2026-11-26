@@ -1,4 +1,4 @@
-import { apiRequest } from "@/lib/backend-client"
+import { apiRequest } from "@/lib/backend-auth-client"
 import type { CreateRentalInput, CustomerRental } from "@/lib/customer-data"
 import type { Equipment } from "@/lib/owner-equipment"
 

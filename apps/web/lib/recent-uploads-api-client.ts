@@ -1,4 +1,4 @@
-import { apiRequest } from "@/lib/backend-client"
+import { apiRequest } from "@/lib/backend-auth-client"
 import type { RecentUpload } from "@/lib/recent-uploads"
 
 /** Frontend call for the platform-wide recent uploads feed. */

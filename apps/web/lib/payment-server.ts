@@ -2,7 +2,7 @@ import "server-only"
 
 import { headers } from "next/headers"
 
-import { apiRequest } from "@/lib/backend-client"
+import { serverApiRequest } from "@/lib/backend-auth-server"
 import { auth } from "@/lib/auth"
 import type { CustomerRental } from "@/lib/customer-data"
 import type { BookingStatus, Equipment, PaymentStatus } from "@/lib/owner-equipment"
@@ -44,14 +44,14 @@ export async function getSignedInUser() {
 }
 
 export function getEquipment(id: string) {
-  return apiRequest<{ equipment: Equipment }>(
+  return serverApiRequest<{ equipment: Equipment }>(
     `/equipment/${encodeURIComponent(id)}`
   )
 }
 
 /** Create the booking before redirecting to Stripe, so every payment has a rental. */
 export function createRental(customerId: string, input: CreateRentalInput) {
-  return apiRequest<{ rental: CustomerRental }>(
+  return serverApiRequest<{ rental: CustomerRental }>(
     `/customer/${encodeURIComponent(customerId)}/rentals`,
     { method: "POST", body: JSON.stringify(input) }
   )
@@ -59,7 +59,7 @@ export function createRental(customerId: string, input: CreateRentalInput) {
 
 /** Fetch a single rental with the customer details joined by the backend. */
 export function getCustomerRental(customerId: string, rentalId: string) {
-  return apiRequest<{ rental: CustomerRental }>(
+  return serverApiRequest<{ rental: CustomerRental }>(
     `/customer/${encodeURIComponent(customerId)}/rentals/${encodeURIComponent(rentalId)}`
   )
 }
@@ -70,7 +70,7 @@ export function updateRentalPayment(
   rentalId: string,
   patch: PaymentPatch
 ) {
-  return apiRequest<{ rental: CustomerRental }>(
+  return serverApiRequest<{ rental: CustomerRental }>(
     `/customer/${encodeURIComponent(customerId)}/rentals/${encodeURIComponent(rentalId)}/payment`,
     {
       method: "PATCH",

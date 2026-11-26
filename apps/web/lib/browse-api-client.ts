@@ -1,4 +1,4 @@
-import { apiRequest } from "@/lib/backend-client"
+import { apiRequest } from "@/lib/backend-auth-client"
 import type { Equipment } from "@/lib/owner-equipment"
 
 /** Frontend calls for the public browse feed and the protected details page. */

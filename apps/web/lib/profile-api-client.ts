@@ -1,4 +1,4 @@
-import { apiRequest } from "@/lib/backend-client"
+import { apiRequest } from "@/lib/backend-auth-client"
 import type { ProfileInput, UserProfile } from "@/lib/profile-data"
 
 /** Frontend-only profile API calls (works for customer, owner and admin). */
