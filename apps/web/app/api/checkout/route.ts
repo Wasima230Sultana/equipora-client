@@ -120,7 +120,7 @@ export async function POST(request: Request) {
       customer_email: user.email,
       metadata,
       // Embedded Checkout returns here with the session id; the rental id is in metadata.
-      ui_mode: "embedded",
+      ui_mode: "embedded_page",
       return_url: `${appUrl}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
     })
 
@@ -141,9 +141,18 @@ export async function POST(request: Request) {
       clientSecret: session.client_secret,
     })
   } catch (error) {
-    console.error("[Checkout] could not create session:", error)
+    // Keep Stripe's real reason in the server log so failures are debuggable.
+    console.error(
+      "[Checkout] could not create session:",
+      error instanceof Error ? error.message : error
+    )
     return NextResponse.json(
-      { error: "Could not start checkout. Please try again." },
+      {
+        error:
+          process.env.NODE_ENV === "production"
+            ? "Could not start checkout. Please try again."
+            : `Could not start checkout: ${error instanceof Error ? error.message : "unknown error"}`,
+      },
       { status: 500 }
     )
   }
