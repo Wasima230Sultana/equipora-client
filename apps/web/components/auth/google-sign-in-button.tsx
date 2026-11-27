@@ -23,12 +23,23 @@ export function GoogleSignInButton({
   async function handleClick() {
     setLoading(true)
     try {
-      const { error } = await signIn.social({ provider: "google", callbackURL })
-      if (error) {
+      const result = await signIn.social({
+        provider: "google",
+        callbackURL,
+        errorCallbackURL: "/sign-in",
+      })
+
+      if (result.error) {
         toast.error("Google sign-in failed", {
-          description: error.message || "Please try again.",
+          description: result.error.message || "Please try again.",
         })
+        return
       }
+
+      // Better Auth normally redirects automatically. Do it explicitly as well
+      // so the button still works if that redirect hook is unavailable.
+      const url = result.data?.url
+      if (url) window.location.assign(url)
     } catch (error) {
       toast.error("Google sign-in failed", {
         description: error instanceof Error ? error.message : undefined,

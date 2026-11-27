@@ -5,10 +5,15 @@ import { MongoClient } from "mongodb"
 const client = new MongoClient(process.env.MONGODB_URL as string)
 const db = client.db("equipora")
 
-const googleClientId = process.env.GOOGLE_CLIENT_ID
-const googleClientSecret = process.env.GOOGLE_CLIENT_SECRET
 
 export const auth = betterAuth({
+  baseURL: process.env.BETTER_AUTH_URL, 
+      account: {
+  accountLinking: {
+    enabled: true,
+    trustedProviders: ["google"],
+  },
+},
   emailAndPassword: {
     enabled: true,
     minPasswordLength: 6,
@@ -22,15 +27,13 @@ export const auth = betterAuth({
       },
     },
   },
-  socialProviders:
-    googleClientId && googleClientSecret
-      ? {
-          google: {
-            clientId: googleClientId,
-            clientSecret: googleClientSecret,
-          },
-        }
-      : {},
+  socialProviders: {
+        google: { 
+            clientId: process.env.GOOGLE_CLIENT_ID as string, 
+            clientSecret: process.env.GOOGLE_CLIENT_SECRET as string, 
+        }, 
+    },
+
   database: mongodbAdapter(db, {
     client,
   }),
