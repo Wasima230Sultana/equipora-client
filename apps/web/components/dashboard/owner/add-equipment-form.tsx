@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react"
 import { LoaderCircle, Save, X } from "lucide-react"
 import { toast } from "sonner"
-
+import { useRouter } from "next/navigation"
 import { Button } from "@workspace/ui/components/button"
 import { Input } from "@workspace/ui/components/input"
 import { PhotoField } from "@/components/auth/photo-field"
@@ -47,7 +47,7 @@ export function AddEquipmentForm({
   )
   const [saving, setSaving] = useState(false)
   const editingId = initialEquipment?.id
-
+  const router = useRouter()
   useEffect(() => {
     console.log(
       "[Owner UI] equipment form mounted",
@@ -65,7 +65,6 @@ export function AddEquipmentForm({
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault()
-    // console.log("[Owner UI] submit clicked for", form.name)
 
     const isValid =
       form.name.trim() !== "" &&
@@ -74,15 +73,12 @@ export function AddEquipmentForm({
       form.rentalPrice > 0 &&
       form.availableQuantity >= 0
     if (!isValid) {
-      console.warn("[Owner UI] validation failed - required fields missing")
       toast.error("Please complete the required fields with valid values")
       return
     }
 
     setSaving(true)
     try {
-      // console.log("[Owner UI] sending", editingId ? "PATCH" : "POST", "equipment")
-
       const result = editingId
         ? await ownerApiClient.updateEquipment(ownerId, editingId, form)
         : await ownerApiClient.createEquipment(ownerId, form)
@@ -97,8 +93,9 @@ export function AddEquipmentForm({
         }
       )
 
-      if (!editingId) setForm({ ...emptyEquipmentInput })
       onSaved?.()
+      // Absolute path so both the Add page and the Update modal land on My Equipment.
+      router.push("/dashboard/owner/my-equipment")
     } catch (error) {
       console.error("[Owner UI] save failed", error)
       toast.error(error instanceof Error ? error.message : "Something went wrong")
