@@ -11,7 +11,10 @@
         "MONGODB_URL",
         "GOOGLE_CLIENT_ID",
         "GOOGLE_CLIENT_SECRET",
-        "STRIPE_SECRET_KEY"
+        "STRIPE_SECRET_KEY",
+        "NEXT_PUBLIC_APP_URL",
+        "NEXT_PUBLIC_EQUIPORA_SERVER_URL",
+        "NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY"
       ]
     },
     "dev": {

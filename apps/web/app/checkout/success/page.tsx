@@ -1,11 +1,12 @@
-import { BookingSummary, SummaryRow } from "@/components/checkout/booking-summary"
 import { CheckoutResult } from "@/components/checkout/checkout-result"
-import { CustomerDetails } from "@/components/checkout/customer-details"
-import { rentalDays } from "@/lib/browse-equipment"
-import { getCustomerRental, updateRentalPayment } from "@/lib/payment-server"
-import { getStripe } from "@/lib/stripe"
+import { CheckoutSuccess } from "@/components/checkout/checkout-success"
+import { retrievePaidCheckout } from "@/lib/checkout-session"
+import { confirmPaidRental, getCustomerRental } from "@/lib/payment-server"
 
-/** Stripe sends the user here after a successful payment. */
+/** Depends on the session id in the URL and the live Stripe session. */
+export const dynamic = "force-dynamic"
+
+/** Stripe sends the customer here after payment; the session is verified first. */
 export default async function CheckoutSuccessPage({
   searchParams,
 }: {
@@ -23,102 +24,51 @@ export default async function CheckoutSuccessPage({
     )
   }
 
+  // Stripe is the only source of truth for whether the payment succeeded.
+  let payment
   try {
-    // Always verify with Stripe; never trust a paid-looking URL parameter.
-    const session = await getStripe().checkout.sessions.retrieve(sessionId)
-    if (session.payment_status !== "paid") {
-      return (
-        <CheckoutResult
-          status="error"
-          title="Payment not completed"
-          description="Stripe has not confirmed a payment for this session yet."
-        />
-      )
-    }
-
-    const rentalId = session.metadata?.rentalId
-    const customerId = session.metadata?.customerId
-    if (!rentalId || !customerId) {
-      return (
-        <CheckoutResult
-          status="error"
-          title="Booking details are missing"
-          description="This checkout session is not linked to a rental."
-        />
-      )
-    }
-
-    // This is the single confirmation step: Stripe has verified payment above.
-    // The backend update is idempotent, so a page refresh is harmless.
-    await updateRentalPayment(customerId, rentalId, {
-      sessionId: session.id,
-      paymentStatus: "Paid",
-      bookingStatus: "Confirmed",
-      paymentIntentId:
-        typeof session.payment_intent === "string"
-          ? session.payment_intent
-          : session.payment_intent?.id,
-      paidAmount:
-        typeof session.amount_total === "number"
-          ? session.amount_total / 100
-          : undefined,
-      currency: session.currency ?? undefined,
-    })
-
-    const { rental } = await getCustomerRental(customerId, rentalId)
-    const days = rentalDays(rental.rentalStartDate, rental.rentalEndDate)
-    const quantity = rental.requiredQuantity ?? 1
-    const total = rental.paidAmount ?? rental.totalAmount
-    const rate = Math.round((total / Math.max(1, days * quantity)) * 100) / 100
-
-    return (
-      <CheckoutResult
-        status="success"
-        title="Booking confirmed"
-        description="Your payment was successful. You can track this booking in My Rentals."
-      >
-        <div className="space-y-3 text-sm">
-          <SummaryRow label="Equipment" value={rental.equipmentName} />
-          <SummaryRow
-            label="Rental start"
-            value={new Date(rental.rentalStartDate).toLocaleDateString()}
-          />
-          <SummaryRow
-            label="Rental end"
-            value={new Date(rental.rentalEndDate).toLocaleDateString()}
-          />
-
-          <BookingSummary
-            days={days}
-            rate={rate}
-            quantity={quantity}
-            total={total}
-            paid
-          />
-
-          <SummaryRow
-            label="Payment reference"
-            value={rental.stripePaymentIntentId ?? session.id}
-          />
-          <CustomerDetails
-            customer={
-              rental.customer ?? {
-                name: "",
-                email: session.customer_email ?? "",
-              }
-            }
-          />
-        </div>
-      </CheckoutResult>
-    )
+    payment = await retrievePaidCheckout(sessionId)
   } catch (error) {
-    console.error("[Checkout success] could not load the booking:", error)
+    console.error("[Checkout success] Stripe lookup failed:", error)
     return (
       <CheckoutResult
         status="error"
-        title="Could not load your booking"
-        description="Your payment may still have gone through. Please check My Rentals."
+        title="Could not verify your payment"
+        description="Please refresh this page or check My Rentals in a moment."
       />
     )
   }
+
+  if (!payment) {
+    return (
+      <CheckoutResult
+        status="error"
+        title="Payment not completed"
+        description="Stripe has not confirmed a payment for this session yet."
+      />
+    )
+  }
+
+  let synced = false
+  let rental
+
+  if (payment.rentalId && payment.customerId) {
+    // Best effort: never hide the receipt if the backend is down or slow.
+    synced = await confirmPaidRental(payment.customerId, payment.rentalId, {
+      sessionId: payment.sessionId,
+      paymentStatus: "Paid",
+      bookingStatus: "Confirmed",
+      paymentIntentId: payment.paymentIntentId,
+      paidAmount: payment.amount,
+      currency: payment.currency,
+    })
+
+    try {
+      rental = (await getCustomerRental(payment.customerId, payment.rentalId)).rental
+    } catch (error) {
+      console.error("[Checkout success] could not load rental details:", error)
+    }
+  }
+
+  return <CheckoutSuccess payment={payment} rental={rental} synced={synced} />
 }

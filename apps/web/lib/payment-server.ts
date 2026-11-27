@@ -25,14 +25,16 @@ export type CreateRentalInput = {
   stripeSessionId: string
 }
 
-/** Origin from the current request, used for Stripe's return URLs. */
+/** Public app URL for Stripe return URLs. The configured value wins so a
+ *  deployed site never redirects customers to localhost behind a proxy. */
 export async function getAppUrl(): Promise<string> {
-  const requestHeaders = await headers()
-  return (
-    requestHeaders.get("origin") ??
-    process.env.NEXT_PUBLIC_APP_URL ??
-    "http://localhost:3000"
-  )
+  const configured =
+    process.env.NEXT_PUBLIC_APP_URL?.trim() ||
+    process.env.BETTER_AUTH_URL?.trim()
+  if (configured) return configured.replace(/\/+$/, "")
+
+  const origin = (await headers()).get("origin")
+  return (origin ?? "http://localhost:3000").replace(/\/+$/, "")
 }
 
 /** Read the signed-in user from the Better Auth session cookie (never trust a body id). */
@@ -77,4 +79,22 @@ export function updateRentalPayment(
       body: JSON.stringify(patch),
     }
   )
+}
+
+/**
+ * Best-effort booking confirmation. Stripe has already verified the payment,
+ * so a backend outage must never hide the customer's success page.
+ */
+export async function confirmPaidRental(
+  customerId: string,
+  rentalId: string,
+  patch: PaymentPatch
+): Promise<boolean> {
+  try {
+    await updateRentalPayment(customerId, rentalId, patch)
+    return true
+  } catch (error) {
+    console.error("[Checkout success] could not sync the rental payment:", error)
+    return false
+  }
 }

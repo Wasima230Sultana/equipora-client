@@ -14,6 +14,21 @@ export type CheckoutSession = {
   clientSecret: string
 }
 
+/** Payment details read back from Stripe with `checkout.sessions.retrieve()`. */
+export type CheckoutPayment = {
+  sessionId: string
+  rentalId?: string
+  customerId?: string
+  equipmentId?: string
+  rentalStartDate?: string
+  rentalEndDate?: string
+  quantity?: number
+  amount: number
+  currency: string
+  paymentIntentId?: string
+  customerEmail?: string
+}
+
 /** Ask the server to create a Stripe Checkout session for this booking. */
 export async function createCheckoutSession(
   input: CheckoutInput
