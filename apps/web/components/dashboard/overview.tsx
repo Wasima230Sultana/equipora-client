@@ -51,7 +51,7 @@ export function Overview() {
         error={statsError}
       />
 
-      <div className="grid gap-4 lg:grid-cols-3">
+      {/* <div className="grid gap-4 lg:grid-cols-3">
         <Card className="gap-0 py-0 lg:col-span-2">
           <CardHeader className="border-b border-border px-6 py-5">
             <CardTitle className="text-base">Recent uploads</CardTitle>
@@ -128,7 +128,102 @@ export function Overview() {
             </Link>
           </CardContent>
         </Card>
-      </div>
+      </div> */}
+
+<div className="grid grid-cols-1 gap-4 sm:gap-5 lg:grid-cols-3">
+  {/* Recent Uploads */}
+  <Card className="min-w-0 gap-0 py-0 lg:col-span-2">
+    <CardHeader className="border-b border-border px-4 py-4 sm:px-6 sm:py-5">
+      <CardTitle className="text-base">Recent uploads</CardTitle>
+    </CardHeader>
+
+    <CardContent className="px-4 py-2 sm:px-6">
+      {loading ? (
+        <div className="space-y-4 py-4">
+          {Array.from({ length: 3 }).map((_, index) => (
+            <div key={index} className="flex items-center gap-3 sm:gap-4">
+              <span className="size-2 shrink-0 rounded-full bg-muted" />
+              <div className="min-w-0 flex-1 space-y-2">
+                <div className="h-3.5 w-40 max-w-full animate-pulse rounded bg-muted" />
+                <div className="h-3 w-48 max-w-full animate-pulse rounded bg-muted" />
+              </div>
+            </div>
+          ))}
+        </div>
+      ) : error ? (
+        <p className="py-8 text-center text-sm text-muted-foreground">
+          {error}
+        </p>
+      ) : uploads.length === 0 ? (
+        <p className="py-8 text-center text-sm text-muted-foreground">
+          No equipment has been uploaded yet.
+        </p>
+      ) : (
+        <ul className="divide-y divide-border">
+          {uploads.map((item) => {
+            const detail = [
+              item.status,
+              item.category || "Equipment",
+              item.ownerName,
+              item.location,
+            ]
+              .filter(Boolean)
+              .join(" · ")
+
+            return (
+              <li
+                key={item.id}
+                className="flex flex-col gap-2 py-4 sm:flex-row sm:items-center sm:gap-4"
+              >
+                <div className="flex min-w-0 items-start gap-3 sm:flex-1 sm:items-center sm:gap-4">
+                  <span className="mt-1.5 size-2 shrink-0 rounded-full bg-primary sm:mt-0" />
+
+                  <div className="min-w-0 flex-1">
+                    <p className="break-words text-sm font-medium">
+                      {item.name}
+                    </p>
+                    <p className="break-words text-xs text-muted-foreground sm:text-sm">
+                      {detail}
+                    </p>
+                  </div>
+                </div>
+
+                <span className="pl-5 text-xs text-muted-foreground sm:shrink-0 sm:pl-0 sm:text-right">
+                  {formatUploadTime(item.createdAt)}
+                </span>
+              </li>
+            )
+          })}
+        </ul>
+      )}
+    </CardContent>
+  </Card>
+
+  {/* Quick Links */}
+  <Card className="min-w-0 gap-0 py-0">
+    <CardHeader className="border-b border-border px-4 py-4 sm:px-6 sm:py-5">
+      <CardTitle className="text-base">Quick links</CardTitle>
+    </CardHeader>
+
+    <CardContent className="flex flex-col gap-2 px-4 py-4 sm:px-6 sm:py-5">
+      <Link href="/dashboard/profile" className={QuickLinkClass}>
+        <span>Manage your profile</span>
+        <ArrowUpRight className="size-4 shrink-0" />
+      </Link>
+
+      <Link href="/dashboard" className={QuickLinkClass}>
+        <span>Refresh overview</span>
+        <ArrowUpRight className="size-4 shrink-0" />
+      </Link>
+
+      <Link href="/" className={QuickLinkClass}>
+        <span>Back to website</span>
+        <ArrowUpRight className="size-4 shrink-0" />
+      </Link>
+    </CardContent>
+  </Card>
+</div>
+
     </div>
   )
 }
