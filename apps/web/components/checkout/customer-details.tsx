@@ -18,7 +18,7 @@ export function CustomerDetails({
         <CardTitle className="text-base">{title}</CardTitle>
       </CardHeader>
       <CardContent className="space-y-2 px-6 py-4 text-sm">
-        <SummaryRow label="Name" value={customer.name || "Equipora customer"} />
+        <SummaryRow label="Name" value={customer.name } />
         <SummaryRow label="Email" value={customer.email} />
         {customer.phone !== undefined && (
           <SummaryRow label="Phone" value={customer.phone} />
